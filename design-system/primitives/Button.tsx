@@ -27,14 +27,14 @@ export function Button({ href, variant = 'primary', accent = 'tune', children }:
     return (
       <Link
         href={href}
-        className="group inline-flex items-center gap-3 rounded-full bg-yellow-50 px-7 py-3.5 text-[15px] font-medium tracking-[-0.005em] text-ink-black transition-[transform,background-color] duration-200 ease-out hover:scale-[0.985] hover:bg-[#F4F538] active:scale-[0.97]"
+        className="group inline-flex items-center gap-3 rounded-full bg-yellow-50 px-7 py-3.5 text-[15px] font-medium tracking-[-0.005em] text-ink-black transition-[background-color,transform] duration-200 ease-out hover:bg-[#F4F538] active:scale-[0.97]"
         style={{
           // Neutral, restrained shadow — CTA reads as isolated, not blended into the field.
           boxShadow: '0 1px 0 rgba(0,0,0,0.10), 0 6px 16px -8px rgba(0,0,0,0.35)',
         }}
       >
         <span>{children}</span>
-        <span aria-hidden className="transition-transform duration-200 ease-out group-hover:translate-x-0.5">→</span>
+        <span aria-hidden>→</span>
       </Link>
     );
   }
@@ -43,19 +43,22 @@ export function Button({ href, variant = 'primary', accent = 'tune', children }:
     return (
       <Link
         href={href}
-        className={`group inline-flex items-center gap-3 rounded-full ${accentBgMap[accent]} px-7 py-3.5 text-[15px] font-medium tracking-[-0.005em] text-surface-paper transition-[transform,box-shadow] duration-200 ease-out hover:scale-[0.985] active:scale-[0.97]`}
+        className={`group inline-flex items-center gap-3 rounded-full ${accentBgMap[accent]} px-7 py-3.5 text-[15px] font-medium tracking-[-0.005em] text-surface-paper transition-[background-color,box-shadow,transform] duration-200 ease-out active:scale-[0.97]`}
         style={{
           boxShadow: `0 1px 0 rgba(20,17,14,0.04), 0 12px 28px -16px ${accentShadowMap[accent]}`,
         }}
       >
         <span>{children}</span>
-        <span aria-hidden className="transition-transform duration-200 ease-out group-hover:translate-x-0.5">→</span>
+        <span aria-hidden>→</span>
       </Link>
     );
   }
 
   return (
-    <Link href={href} className="group inline-flex items-center gap-2 text-[15px] text-ink-black">
+    <Link
+      href={href}
+      className="group inline-flex items-center gap-2 text-[15px] text-ink-black transition-[color,transform] duration-150 ease-out active:scale-[0.985]"
+    >
       <span className="relative">
         {children}
         <span

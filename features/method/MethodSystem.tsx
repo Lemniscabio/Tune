@@ -84,7 +84,7 @@ function SolutionChildCard({
 }) {
   return (
     <article
-      className={`motion-settle flex min-h-[220px] flex-col rounded-[24px] border border-line-hairline-cool bg-white px-6 py-6 shadow-[0_20px_64px_-58px_rgba(20,17,14,0.24)] md:px-7 md:py-7 ${className ?? ''}`}
+      className={`group motion-settle flex min-h-[220px] flex-col rounded-[24px] border border-line-hairline-cool bg-white px-6 py-6 shadow-[0_20px_64px_-58px_rgba(20,17,14,0.24)] transition-[transform,box-shadow,border-color] duration-180 ease-out hover:-translate-y-0.5 hover:border-blue-100 hover:shadow-[0_24px_68px_-52px_rgba(20,17,14,0.22)] active:scale-[0.995] md:px-7 md:py-7 ${className ?? ''}`}
     >
       {title !== 'Months, not years.' ? (
         <h3 className="max-w-[14ch] text-[clamp(1.55rem,2vw,2rem)] font-medium leading-[1.06] tracking-[-0.026em] text-ink-black">
@@ -101,7 +101,7 @@ function SolutionChildCard({
           </h3>
           <p className="mt-5 max-w-[26ch] text-[clamp(1.05rem,1.55vw,1.28rem)] leading-[1.5] text-ink-graphite md:text-[19px]">
             Tune explores{' '}
-            <span className="inline-block text-[clamp(2.7rem,5vw,4.6rem)] font-semibold leading-[0.88] tracking-[-0.06em] text-ink-black align-[-0.12em]">
+            <span className="inline-block align-[-0.12em] text-[clamp(2.7rem,5vw,4.6rem)] font-semibold leading-[0.88] tracking-[-0.06em] text-ink-black transition-transform duration-180 ease-out group-hover:-translate-y-0.5">
               100x
             </span>{' '}
             more conditions between wet-lab rounds than your team could.
@@ -128,14 +128,14 @@ function SolutionFeatureCard({
 }) {
   return (
     <article
-      className={`motion-settle relative flex min-h-[220px] flex-col overflow-hidden rounded-[24px] border border-blue-200/45 px-6 py-6 shadow-[0_28px_84px_-60px_rgba(3,2,122,0.42)] md:px-8 md:py-8 lg:px-9 lg:py-9 ${className ?? ''}`}
+      className={`group motion-settle relative flex min-h-[220px] flex-col overflow-hidden rounded-[24px] border border-blue-200/45 px-6 py-6 shadow-[0_28px_84px_-60px_rgba(3,2,122,0.42)] transition-[transform,box-shadow,border-color] duration-200 ease-out hover:-translate-y-0.5 hover:border-blue-100 hover:shadow-[0_34px_92px_-56px_rgba(3,2,122,0.5)] active:scale-[0.995] md:px-8 md:py-8 lg:px-9 lg:py-9 ${className ?? ''}`}
       style={{
         backgroundImage: 'linear-gradient(135deg, #03027A 0%, #1612B8 52%, #4140FC 100%)',
       }}
     >
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-70"
+        className="blue-sheen-drift motion-safe:animate-[blue-sheen-drift_10s_ease-in-out_infinite] pointer-events-none absolute inset-0 opacity-70"
         style={{
           backgroundImage:
             'radial-gradient(circle at 72% 18%, rgba(205,205,254,0.22) 0%, transparent 28%), radial-gradient(circle at 28% 86%, rgba(205,205,254,0.16) 0%, transparent 32%)',
@@ -249,7 +249,7 @@ function LearningLoopPanel({
           {rows.map((row, index) => (
             <div
               key={row.label}
-              className={`grid grid-cols-1 gap-3 px-5 py-5 md:grid-cols-[140px_minmax(0,1fr)] md:gap-6 ${
+              className={`grid grid-cols-1 gap-3 px-5 py-5 transition-colors duration-150 ease-out hover:bg-white/55 md:grid-cols-[140px_minmax(0,1fr)] md:gap-6 ${
                 index > 0
                   ? isWith
                     ? 'border-t border-[#DCE6FF]'
@@ -485,7 +485,7 @@ function MetricChip({
 
   return (
     <div
-      className={`rounded-[18px] border px-4 py-4 ${
+      className={`rounded-[18px] border px-4 py-4 transition-[transform,box-shadow,border-color] duration-150 ease-out hover:-translate-y-0.5 hover:shadow-[0_18px_32px_-24px_rgba(20,17,14,0.18)] ${
         isGain
           ? 'border-[#D7E2FF] bg-[linear-gradient(180deg,#FBFCFF_0%,#EEF3FF_100%)]'
           : 'border-[#E7DCDC] bg-[linear-gradient(180deg,#F7F4F4_0%,#F1EEEE_100%)]'

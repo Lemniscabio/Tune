@@ -149,9 +149,9 @@ function OptimizationLoopVisual() {
           cx={CENTER}
           cy={CENTER}
           r={LOOP_RADIUS + 38}
-          fill="rgba(3,2,122,0.12)"
-          stroke="rgba(205,205,254,0.08)"
-          strokeWidth={1}
+          fill="rgba(3,2,122,0.16)"
+          stroke="rgba(205,205,254,0.16)"
+          strokeWidth={1.1}
         />
 
         {gridDots.map((dot) => (
@@ -169,8 +169,8 @@ function OptimizationLoopVisual() {
               x2={end.x}
               y2={end.y}
               stroke="#CDCDFE"
-              strokeOpacity={tick.major ? 0.34 : 0.16}
-              strokeWidth={tick.major ? 0.9 : 0.55}
+              strokeOpacity={tick.major ? 0.48 : 0.26}
+              strokeWidth={tick.major ? 1.05 : 0.7}
               strokeLinecap="round"
             />
           );
@@ -181,16 +181,16 @@ function OptimizationLoopVisual() {
           cy={CENTER}
           r={LOOP_RADIUS}
           fill="none"
-          stroke="rgba(205,205,254,0.35)"
-          strokeWidth={1.2}
+          stroke="rgba(205,205,254,0.52)"
+          strokeWidth={1.45}
         />
         <circle
           cx={CENTER}
           cy={CENTER}
           r={LOOP_RADIUS + 8}
           fill="none"
-          stroke="rgba(161,161,254,0.16)"
-          strokeWidth={0.75}
+          stroke="rgba(161,161,254,0.26)"
+          strokeWidth={0.95}
           strokeDasharray="2 7"
         />
 
@@ -203,8 +203,8 @@ function OptimizationLoopVisual() {
               d={arcPath(LOOP_RADIUS, from, to)}
               fill="none"
               stroke="#A1A1FE"
-              strokeOpacity={0.44}
-              strokeWidth={1.3}
+              strokeOpacity={0.58}
+              strokeWidth={1.45}
             />
           );
         })}

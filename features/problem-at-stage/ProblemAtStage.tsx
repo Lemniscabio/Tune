@@ -78,9 +78,16 @@ function ProblemBentoCard({
         ? 'max-w-[64ch] text-[15px] leading-[1.62] text-ink-graphite md:text-[16px]'
         : 'max-w-[32ch] text-[15px] leading-[1.62] text-ink-graphite md:text-[16px]';
 
+  const hoverClass =
+    tone === 'anchor'
+      ? 'hover:-translate-y-0.5 hover:shadow-[0_34px_88px_-60px_rgba(3,2,122,0.36)] hover:border-blue-200 active:scale-[0.995]'
+      : tone === 'consequence'
+        ? 'hover:-translate-y-0.5 hover:shadow-[0_26px_72px_-54px_rgba(20,17,14,0.34)] hover:border-neutral-100 active:scale-[0.995]'
+        : 'hover:-translate-y-0.5 hover:shadow-[0_26px_72px_-54px_rgba(20,17,14,0.28)] hover:border-neutral-100 active:scale-[0.995]';
+
   return (
     <article
-      className={`motion-settle flex min-h-[220px] flex-col rounded-[24px] border px-6 py-6 md:px-7 md:py-7 ${cardClass} ${className ?? ''}`}
+      className={`group motion-settle flex min-h-[220px] flex-col rounded-[24px] border px-6 py-6 transition-[transform,box-shadow,border-color] duration-180 ease-out md:px-7 md:py-7 ${cardClass} ${hoverClass} ${className ?? ''}`}
     >
       <h3 className={`whitespace-pre-line font-medium text-ink-black ${titleClass}`}>
         {tone === 'anchor' ? <AnchorTitle title={title} /> : title}
@@ -88,7 +95,10 @@ function ProblemBentoCard({
       {body ? <p className={`mt-4 ${bodyClass}`}>{body}</p> : null}
 
       {punchline ? (
-        <p className="mt-auto max-w-[28ch] pt-8 text-[24px] font-medium leading-none tracking-[-0.03em] text-blue-900">
+        <p
+          className="motion-settle mt-auto max-w-[28ch] pt-8 text-[24px] font-medium leading-none tracking-[-0.03em] text-blue-900"
+          style={{ animationDelay: '140ms' }}
+        >
           {punchline}
         </p>
       ) : null}
@@ -106,7 +116,7 @@ function AnchorTitle({ title }: { title: string }) {
         isn&apos;t hitting the{' '}
       </span>
       <span
-        className="text-blue-700"
+        className="text-blue-700 transition-[text-shadow,color] duration-200 ease-out group-hover:text-blue-500"
         style={{ textShadow: '0 0 18px rgba(65,64,252,0.08)' }}
       >
         productivity target
@@ -115,7 +125,7 @@ function AnchorTitle({ title }: { title: string }) {
         that makes your molecule{' '}
       </span>
       <span
-        className="text-blue-700"
+        className="text-blue-700 transition-[text-shadow,color] duration-200 ease-out group-hover:text-blue-500"
         style={{ textShadow: '0 0 16px rgba(65,64,252,0.06)' }}
       >
         commercially viable

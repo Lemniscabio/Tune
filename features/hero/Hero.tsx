@@ -74,7 +74,7 @@ export function Hero({ hero, sectionToc }: HeroProps) {
                 {hero.headlinePost}
               </h1>
               <p
-                className="body-xl mt-10 max-w-[40ch] text-white/85 motion-settle md:mt-7 md:max-w-[58ch] md:text-blue-100"
+                className="body-l mt-10 max-w-[40ch] text-white/85 motion-settle md:mt-7 md:max-w-[58ch] md:text-blue-100"
                 style={{ animationDelay: '240ms' }}
               >
                 {hero.sub}
@@ -110,7 +110,7 @@ function GhostLight({ href, children }: { href: string; children: React.ReactNod
   return (
     <a
       href={href}
-      className="group inline-flex items-center gap-2 text-[15px] font-medium text-white/85 transition-colors duration-200 hover:text-white"
+      className="group inline-flex items-center gap-2 text-[15px] font-medium text-white/85 transition-[color,transform] duration-150 ease-out hover:text-white active:scale-[0.985]"
     >
       <span className="relative">
         {children}
@@ -118,6 +118,12 @@ function GhostLight({ href, children }: { href: string; children: React.ReactNod
           aria-hidden
           className="absolute -bottom-0.5 left-0 h-px w-0 bg-white/70 transition-[width] duration-200 ease-out group-hover:w-full group-hover:bg-white"
         />
+      </span>
+      <span
+        aria-hidden
+        className="text-[18px] leading-none"
+      >
+        →
       </span>
     </a>
   );

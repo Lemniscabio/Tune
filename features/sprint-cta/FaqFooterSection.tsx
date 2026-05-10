@@ -1,7 +1,8 @@
 'use client';
 
 import { AnimatePresence, motion } from 'motion/react';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
+import { useInView } from 'motion/react';
 import { shared } from '@/content/shared.content';
 import { Eyebrow } from '@/design-system/primitives/Eyebrow';
 
@@ -35,6 +36,8 @@ const FAQS = [
 
 export function FaqFooterSection({ id = 'engagement-faq' }: { id?: string }) {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
+  const footerRef = useRef<HTMLElement>(null);
+  const footerInView = useInView(footerRef, { once: true, margin: '-80px 0px' });
 
   return (
     <section
@@ -71,15 +74,15 @@ export function FaqFooterSection({ id = 'engagement-faq' }: { id?: string }) {
                   <button
                     type="button"
                     onClick={() => setOpenIndex((current) => (current === index ? null : index))}
-                    className="flex w-full cursor-pointer items-start justify-between gap-6 text-left"
+                    className="group flex w-full cursor-pointer items-start justify-between gap-6 rounded-[18px] text-left transition-colors duration-150 ease-out hover:text-white"
                     aria-expanded={isOpen}
                   >
-                    <span className="max-w-[28ch] text-[22px] font-medium leading-[1.18] tracking-[-0.018em] text-white">
+                    <span className={`max-w-[28ch] text-[22px] font-medium leading-[1.18] tracking-[-0.018em] transition-colors duration-150 ease-out ${isOpen ? 'text-white' : 'text-white/92 group-hover:text-white'}`}>
                       {item.question}
                     </span>
                     <motion.span
                       className="mt-1 text-[24px] leading-none text-blue-100"
-                      animate={{ rotate: isOpen ? 45 : 0 }}
+                      animate={{ rotate: isOpen ? 45 : 0, x: isOpen ? 0 : 2 }}
                       transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
                     >
                       +
@@ -89,11 +92,11 @@ export function FaqFooterSection({ id = 'engagement-faq' }: { id?: string }) {
                   <AnimatePresence initial={false}>
                     {isOpen ? (
                       <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
+                        initial={{ height: 0, opacity: 0, y: -6 }}
+                        animate={{ height: 'auto', opacity: 1, y: 0 }}
+                        exit={{ height: 0, opacity: 0, y: -4 }}
                         transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-                        className="overflow-hidden"
+                        className="origin-top overflow-hidden"
                       >
                         <p className="body-m mt-4 max-w-[58ch] text-blue-100">
                           {item.answer}
@@ -107,11 +110,14 @@ export function FaqFooterSection({ id = 'engagement-faq' }: { id?: string }) {
           </div>
         </div>
 
-        <footer className="relative mt-24 pt-10 md:mt-32">
+        <footer ref={footerRef} className="relative mt-24 pt-10 md:mt-32">
           <div className="mt-1 overflow-hidden">
-            <div
+            <motion.div
               aria-label={shared.brand.name}
               className="flex items-end justify-center gap-4 text-left md:gap-8"
+              initial={{ opacity: 0, y: 18 }}
+              animate={footerInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
             >
               <p className="text-[clamp(3.6rem,18vw,17rem)] font-medium leading-none tracking-[-0.08em] text-white">
                 {shared.brand.name.toUpperCase()}
@@ -124,7 +130,7 @@ export function FaqFooterSection({ id = 'engagement-faq' }: { id?: string }) {
                   Lemnisca
                 </p>
               </div>
-            </div>
+            </motion.div>
           </div>
         </footer>
       </div>

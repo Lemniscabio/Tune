@@ -40,6 +40,14 @@ export function SprintCta({ section, id = 'engagement-start' }: SprintCtaProps) 
                 'linear-gradient(180deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 46%, transparent 100%)',
             }}
           />
+          <div
+            aria-hidden
+            className="blue-sheen-drift motion-safe:animate-[blue-sheen-drift_12s_ease-in-out_infinite] pointer-events-none absolute inset-0 opacity-20"
+            style={{
+              background:
+                'radial-gradient(circle at 26% 14%, rgba(205,205,254,0.2) 0%, transparent 32%)',
+            }}
+          />
 
           <div className="relative z-10 grid gap-10 lg:grid-cols-[1.08fr_0.92fr] lg:gap-12">
             <div>
@@ -61,14 +69,18 @@ export function SprintCta({ section, id = 'engagement-start' }: SprintCtaProps) 
               </div>
             </div>
 
-            <div className="rounded-[28px] border border-white/10 bg-[rgba(17,25,59,0.4)] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] md:p-5">
+            <div className="relative rounded-[28px] border border-white/10 bg-[rgba(17,25,59,0.4)] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] md:p-5">
+              <div
+                aria-hidden
+                className="pointer-events-none absolute left-[-20px] top-10 hidden h-[calc(100%-80px)] w-px bg-[linear-gradient(180deg,rgba(205,205,254,0)_0%,rgba(205,205,254,0.3)_18%,rgba(205,205,254,0.55)_50%,rgba(205,205,254,0.3)_82%,rgba(205,205,254,0)_100%)] lg:block"
+              />
               <div className="space-y-3">
                 {section.steps.map((step, index) => (
                   <div
                     key={step}
-                    className="flex items-center gap-4 rounded-[18px] border border-white/7 bg-[rgba(74,84,122,0.34)] px-4 py-4 md:px-5"
+                    className="group flex items-center gap-4 rounded-[18px] border border-white/7 bg-[rgba(74,84,122,0.34)] px-4 py-4 transition-[background-color,border-color,transform,box-shadow] duration-150 ease-out hover:-translate-y-0.5 hover:border-white/14 hover:bg-[rgba(83,94,138,0.42)] hover:shadow-[0_18px_36px_-28px_rgba(0,0,0,0.38)] md:px-5"
                   >
-                    <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[linear-gradient(180deg,#FF6A1A_0%,#FF5A0A_100%)] text-[14px] font-semibold text-white shadow-[0_10px_24px_-16px_rgba(255,106,26,0.8)]">
+                    <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[linear-gradient(180deg,#FF6A1A_0%,#FF5A0A_100%)] text-[14px] font-semibold text-white shadow-[0_10px_24px_-16px_rgba(255,106,26,0.8)] transition-[transform,filter] duration-150 ease-out group-hover:scale-[1.05] group-hover:brightness-110">
                       {index + 1}
                     </span>
                     <p className="text-[17px] font-medium leading-[1.35] tracking-[-0.015em] text-white md:text-[18px]">
@@ -88,7 +100,7 @@ export function SprintCta({ section, id = 'engagement-start' }: SprintCtaProps) 
                 <div className="mt-6">
                   <a
                     href={CALENDLY_URL}
-                    className="inline-flex items-center rounded-full bg-blue-500 px-5 py-3 text-[14px] font-medium tracking-[-0.015em] text-white shadow-[0_18px_42px_-26px_rgba(65,64,252,0.54)] transition-transform duration-200 ease-out hover:-translate-y-0.5 hover:bg-blue-700"
+                    className="inline-flex items-center rounded-full bg-blue-500 px-5 py-3 text-[14px] font-medium tracking-[-0.015em] text-white shadow-[0_18px_42px_-26px_rgba(65,64,252,0.54)] transition-[background-color,box-shadow,transform] duration-150 ease-out hover:bg-blue-700 active:scale-[0.97]"
                   >
                     Request a Tune fit conversation
                     <span aria-hidden className="ml-3 text-[20px] leading-none">→</span>

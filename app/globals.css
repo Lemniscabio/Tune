@@ -199,6 +199,17 @@
   to   { --engagement-pill-angle: 360deg; }
 }
 
+@keyframes hero-loop-drift {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes blue-sheen-drift {
+  0% { transform: translateX(-8%) translateY(0%); opacity: 0.18; }
+  50% { transform: translateX(8%) translateY(3%); opacity: 0.28; }
+  100% { transform: translateX(-8%) translateY(0%); opacity: 0.18; }
+}
+
 .engagement-transition-pill {
   position: relative;
   display: inline-flex;
@@ -250,6 +261,10 @@
   .motion-numeral,
   .engagement-transition-pill::before,
   .engagement-transition-pill::after {
+    animation: none !important;
+  }
+  .hero-loop-drift,
+  .blue-sheen-drift {
     animation: none !important;
   }
   .motion-settle { opacity: 1; transform: none; }
