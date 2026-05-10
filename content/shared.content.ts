@@ -3,6 +3,7 @@
 
 // TODO: replace with the live Calendly booking link once it's set up.
 export const CALENDLY_URL = 'https://calendly.com/lemnisca';
+const currentYear = new Date().getFullYear();
 
 export const shared = {
   brand: {
@@ -15,6 +16,6 @@ export const shared = {
     ],
   },
   footer: {
-    copyright: '© 2026 Lemnisca. All rights reserved.',
+    copyright: `© ${currentYear} Lemnisca. All rights reserved.`,
   },
 } as const;

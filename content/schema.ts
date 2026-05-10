@@ -21,23 +21,18 @@ export const heroSchema = z.object({
 
 export const problemItemSchema = z.object({
   index: z.string().regex(/^\d{2}$/),
+  label: z.string(),
   title: z.string(),
   body: z.string(),
-  // Short technical caption used in the diagnostic-card layout.
-  // Falls back to a derived single line if absent.
-  caption: z.string().optional(),
+  punchline: z.string().optional(),
 });
 
 export const problemSectionSchema = z.object({
   number: z.string().regex(/^\d{2}$/),
+  eyebrow: z.string(),
   headline: z.string(),
   lead: z.string(),
-  itemsLabel: z.string(),
   items: z.array(problemItemSchema).length(4),
-  // Closing isolated insight line that pivots into §03.
-  pivotLine: z.string().optional(),
-  // The single word inside `pivotLine` rendered as italic accent + underline.
-  pivotAccent: z.string().optional(),
 });
 
 export const sectionTocItemSchema = z.object({
@@ -85,6 +80,44 @@ export const decisionTableSchema = z.object({
   rows: z.array(decisionRowSchema).min(3),
 });
 
+export const engagementStepSchema = z.object({
+  index: z.string().regex(/^\d{2}$/),
+  title: z.string(),
+  body: z.string(),
+  microPoints: z.array(z.string()).min(2).max(3).optional(),
+});
+
+export const engagementModeSchema = z.object({
+  letter: z.enum(['A', 'B']),
+  title: z.string(),
+  description: z.string(),
+  bestFit: z.string(),
+});
+
+export const engagementJourneySchema = z.object({
+  number: z.string().regex(/^\d{2}$/),
+  eyebrow: z.string(),
+  headline: z.string(),
+  intro: z.string(),
+  trustLine: z.string(),
+  steps: z.array(engagementStepSchema).length(4),
+  transitionLine: z.string(),
+  programHeadline: z.string(),
+  programIntro: z.string(),
+  loopNodes: z.tuple([
+    z.string(),
+    z.string(),
+    z.string(),
+    z.string(),
+    z.string(),
+  ]),
+  modelLabel: z.string(),
+  modelPoints: z.array(z.string()).length(5),
+  heavyLiftingTitle: z.string(),
+  heavyLiftingBody: z.string(),
+  modes: z.tuple([engagementModeSchema, engagementModeSchema]),
+});
+
 // §07 — Final CTA / sprint intake
 export const intakeSourceSchema = z.object({
   value: z.string(),
@@ -95,6 +128,7 @@ export const sprintCtaSchema = z.object({
   number: z.string().regex(/^\d{2}$/),
   headline: z.string(),
   body: z.array(z.string()).min(1),
+  steps: z.array(z.string()).length(4),
   formLabels: z.object({
     name: z.string(),
     email: z.string(),
@@ -128,6 +162,7 @@ export type SprintCta = z.infer<typeof sprintCtaSchema>;
 // §05 — Paid loop + Convergence viz + Mode A/B
 export const loopNodeSchema = z.object({ label: z.string() });
 export const candidateChipSchema = z.object({ label: z.string() });
+export const systemPanelItemSchema = z.object({ label: z.string() });
 
 export const modeCardSchema = z.object({
   letter: z.enum(['A', 'B']),
@@ -135,14 +170,51 @@ export const modeCardSchema = z.object({
   body: z.string(),
 });
 
+export const solutionBentoCardSchema = z.object({
+  title: z.string(),
+  body: z.string(),
+});
+
+export const deliverableFeatureCardSchema = z.object({
+  title: z.string(),
+  body: z.string(),
+  hoverNote: z.string(),
+});
+
+export const deliverablesSectionSchema = z.object({
+  eyebrow: z.string(),
+  headline: z.string(),
+  intro: z.string(),
+  note: z.string(),
+  packageLabel: z.string(),
+  cards: z.tuple([
+    deliverableFeatureCardSchema,
+    deliverableFeatureCardSchema,
+    deliverableFeatureCardSchema,
+  ]),
+});
+
 export const paidLoopSchema = z.object({
   number: z.string().regex(/^\d{2}$/),
   headline: z.string(),
   intro: z.string(),
+  solutionBento: z.object({
+    featureTitle: z.string(),
+    children: z.tuple([
+      solutionBentoCardSchema,
+      solutionBentoCardSchema,
+      solutionBentoCardSchema,
+    ]),
+  }),
   vizCaption: z.string(),
   chipsLabel: z.string(),
   loopNodes: z.array(loopNodeSchema).length(5),
   candidates: z.array(candidateChipSchema).length(8),
+  evidenceInputs: z.array(systemPanelItemSchema).length(6),
+  modelComponents: z.array(systemPanelItemSchema).length(4),
+  decisionOutputs: z.array(systemPanelItemSchema).length(6),
+  modelTagline: z.string().optional(),
+  microcopy: z.string(),
   modesLabel: z.string(),
   modes: z.tuple([modeCardSchema, modeCardSchema]),
 });
@@ -157,9 +229,11 @@ export const productPageSchema = z.object({
   sectionToc: z.array(sectionTocItemSchema).min(3),
   hero: heroSchema,
   problemSection: problemSectionSchema,
+  engagementJourney: engagementJourneySchema,
   sprintReturns: sprintBlockSchema,
   decisionTable: decisionTableSchema,
   paidLoop: paidLoopSchema,
+  deliverablesSection: deliverablesSectionSchema,
   paidDeliverables: sprintBlockSchema,
   sprintCta: sprintCtaSchema,
 });
@@ -167,12 +241,14 @@ export const productPageSchema = z.object({
 export type Hero = z.infer<typeof heroSchema>;
 export type ProblemSection = z.infer<typeof problemSectionSchema>;
 export type SectionTocItem = z.infer<typeof sectionTocItemSchema>;
+export type EngagementJourney = z.infer<typeof engagementJourneySchema>;
 export type SprintBlock = z.infer<typeof sprintBlockSchema>;
 export type SprintReturns = SprintBlock;
 export type DecisionTable = z.infer<typeof decisionTableSchema>;
 export type Deliverable = z.infer<typeof deliverableSchema>;
 export type DecisionRow = z.infer<typeof decisionRowSchema>;
 export type PaidLoop = z.infer<typeof paidLoopSchema>;
+export type DeliverablesSection = z.infer<typeof deliverablesSectionSchema>;
 export type LoopNode = z.infer<typeof loopNodeSchema>;
 export type CandidateChip = z.infer<typeof candidateChipSchema>;
 export type ModeCard = z.infer<typeof modeCardSchema>;

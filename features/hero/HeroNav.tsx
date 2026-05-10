@@ -26,18 +26,27 @@ export function HeroNav({ brand, brandSuffix, items }: HeroNavProps) {
 
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+    };
   }, []);
 
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-40 transition-[background-color,backdrop-filter,box-shadow] duration-300 ${
+      className={`fixed inset-x-0 top-0 z-40 overflow-hidden transition-[background-color,backdrop-filter,box-shadow,border-color] duration-300 ${
         scrolled
-          ? 'bg-white/72 backdrop-blur-xl shadow-[0_18px_54px_-38px_rgba(3,8,42,0.32)]'
+          ? 'border-b border-black/8 bg-white/44 backdrop-blur-[18px] shadow-[inset_0_-1px_0_rgba(255,255,255,0.16),0_18px_54px_-38px_rgba(3,8,42,0.2)]'
           : 'bg-transparent shadow-none'
       }`}
     >
-      <div className="flex items-center justify-between px-6 py-5 md:px-10 lg:px-14">
+      {scrolled ? (
+        <span
+          aria-hidden
+          className="pointer-events-none absolute inset-[1px] rounded-none bg-[linear-gradient(180deg,rgba(255,255,255,0.18)_0%,rgba(255,255,255,0.1)_34%,rgba(255,255,255,0.03)_100%)]"
+        />
+      ) : null}
+
+      <div className="relative z-10 flex items-center justify-between px-6 py-5 md:px-10 lg:px-14">
         <Link
           href="/"
           className="group inline-flex items-baseline gap-2.5 transition-opacity duration-200 hover:opacity-85"
@@ -61,24 +70,48 @@ export function HeroNav({ brand, brandSuffix, items }: HeroNavProps) {
         </Link>
         <nav className="flex items-center gap-7">
           {items.map((item) => (
-            <Link
-              key={item.label}
-              href={item.href}
-              className={`group relative text-[14px] transition-colors duration-200 ${
-                scrolled ? 'text-blue-900 hover:text-blue-700' : 'text-white hover:text-white/85'
-              }`}
-            >
-              <span>{item.label}</span>
-              <span
-                aria-hidden
-                className={`absolute -bottom-1 left-0 h-px w-0 transition-[width] duration-200 ease-out group-hover:w-full ${
-                  scrolled ? 'bg-blue-900/70' : 'bg-white'
-                }`}
-              />
-            </Link>
+            <NavItem key={item.label} item={item} scrolled={scrolled} />
           ))}
         </nav>
       </div>
     </header>
+  );
+}
+
+function NavItem({
+  item,
+  scrolled,
+}: {
+  item: { label: string; href: string };
+  scrolled: boolean;
+}) {
+  const isApply = item.label.trim().toLowerCase() === 'apply';
+
+  if (scrolled && isApply) {
+    return (
+      <Link
+        href={item.href}
+        className="inline-flex items-center rounded-full bg-[#FBFC40] px-4 py-2 text-[14px] font-medium text-blue-900 transition-transform duration-200 hover:scale-[0.985]"
+      >
+        {item.label}
+      </Link>
+    );
+  }
+
+  return (
+    <Link
+      href={item.href}
+      className={`group relative text-[14px] transition-colors duration-200 ${
+        scrolled ? 'text-blue-900 hover:text-blue-700' : 'text-white hover:text-white/85'
+      }`}
+    >
+      <span>{item.label}</span>
+      <span
+        aria-hidden
+        className={`absolute -bottom-1 left-0 h-px w-0 transition-[width] duration-200 ease-out group-hover:w-full ${
+          scrolled ? 'bg-blue-900/70' : 'bg-white'
+        }`}
+      />
+    </Link>
   );
 }

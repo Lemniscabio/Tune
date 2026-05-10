@@ -37,6 +37,10 @@ const INNER_RINGS = [70, 104, 138] as const;
 const TICK_COUNT = 96;
 const EASE = [0.4, 0, 0.2, 1] as const;
 
+function roundCoord(value: number) {
+  return Number(value.toFixed(3));
+}
+
 const ticks = Array.from({ length: TICK_COUNT }, (_, index) => {
   const angle = (index / TICK_COUNT) * 360 - 90;
   const major = index % 6 === 0;
@@ -64,8 +68,8 @@ const gridDots = Array.from({ length: 13 * 13 }, (_, index) => {
 function pointAt(radius: number, angleDeg: number) {
   const angle = (angleDeg * Math.PI) / 180;
   return {
-    x: CENTER + radius * Math.cos(angle),
-    y: CENTER + radius * Math.sin(angle),
+    x: roundCoord(CENTER + radius * Math.cos(angle)),
+    y: roundCoord(CENTER + radius * Math.sin(angle)),
   };
 }
 

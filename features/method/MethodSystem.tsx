@@ -1,303 +1,509 @@
-'use client';
-
-// §03 — Tune's method, presented as an evolving technical system.
-//
-// Two stacked visualizations:
-//   1. PROCESS FLOW — 5 stations of the optimization loop in a horizontal sequence
-//      with arrows. Each station carries a small scientific glyph, not an icon.
-//   2. EVOLUTION  — 4 cycle panels showing the feasible region narrowing across
-//      iterations. The point: each cycle improves learning per experiment.
-//
-// White ground, blue-ramp instruments, ink type. No yellow inside the system —
-// reserved for the hero pill, §02 pivot, and §04 CTA.
-
-import { motion, useInView, useReducedMotion } from 'motion/react';
-import { useRef } from 'react';
 import type { PaidLoop as PaidLoopContent } from '@/content/schema';
-import { Eyebrow } from '@/design-system/primitives/Eyebrow';
+import { AccentUnderline } from '@/features/hero/AccentUnderline';
 
 type MethodSystemProps = {
   section: PaidLoopContent;
   id?: string;
 };
 
+const BENTO_LAYOUT = [
+  'lg:col-span-4',
+  'lg:col-span-3',
+  'lg:col-span-7',
+] as const;
+
 export function MethodSystem({ section, id = 'how-method' }: MethodSystemProps) {
   return (
     <section id={id} className="relative bg-white">
-      <div className="mx-auto max-w-[1200px] px-6 pt-24 pb-32 md:pt-32 md:pb-40">
-        {/* Section header */}
-        <div className="grid grid-cols-1 gap-10 md:grid-cols-12">
-          <div className="md:col-span-5">
-            <Eyebrow>Section {section.number} · Method</Eyebrow>
-            <h2 className="display-section mt-6 max-w-[14ch] text-ink-black">
-              {section.headline}
-            </h2>
-          </div>
-          <p className="body-l mt-2 max-w-[52ch] text-ink-graphite md:col-span-6 md:col-start-7 md:mt-1">
+      <div className="mx-auto max-w-[1240px] px-6 pt-24 pb-32 md:px-10 md:pt-32 md:pb-40 lg:px-14">
+        <div className="max-w-[1040px]">
+          <TransitionPill>THE SOLUTION</TransitionPill>
+          <h2 className="display-section mt-5 max-w-[14ch] text-ink-black md:max-w-none">
+            {section.headline}
+          </h2>
+          <p className="body-xl mt-8 max-w-[60ch] text-ink-graphite/82">
             {section.intro}
           </p>
         </div>
 
-        {/* Process flow — 5 stations */}
-        <ProcessFlow stations={section.loopNodes.map((n, i) => ({ index: i + 1, label: n.label }))} />
+        <div className="mt-16 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-12 lg:gap-6">
+          {section.solutionBento.children.map((card, index) => (
+            <SolutionChildCard
+              key={card.title}
+              title={card.title}
+              body={card.body}
+              className={BENTO_LAYOUT[index]}
+            />
+          ))}
 
-        {/* Feasible region evolution */}
-        <FeasibleRegionEvolution />
+          <SolutionFeatureCard
+            title={section.solutionBento.featureTitle}
+            className="lg:col-span-5 lg:row-span-2 lg:col-start-8 lg:row-start-1"
+          />
+        </div>
 
-        {/* Caption */}
-        <p className="mono-s mt-12 text-center text-ink-ash">
-          {section.vizCaption}
-        </p>
+        <div className="mt-20 md:mt-24">
+          <div className="max-w-[860px]">
+            <p className="mono-s text-ink-ash" style={{ letterSpacing: '0.08em' }}>
+              LEARNING LOOPS
+            </p>
+            <h3 className="mt-5 max-w-[16ch] text-[clamp(2rem,3.4vw,3rem)] font-medium leading-[1.04] tracking-[-0.03em] text-ink-black">
+              Two ways a fermentation program learns.
+            </h3>
+            <p className="mt-5 max-w-[58ch] text-[16px] leading-[1.65] text-ink-graphite md:text-[18px]">
+              One loop burns wet-lab rounds to discover what happened. The other uses Tune
+              to learn between runs, then chooses the next experiment with intent.
+            </p>
+          </div>
+
+          <LearningLoopComparison />
+        </div>
       </div>
     </section>
   );
 }
 
-// ─── Process flow ───────────────────────────────────────────────────────────
-
-type Station = { index: number; label: string };
-
-function ProcessFlow({ stations }: { stations: Station[] }) {
-  const reduced = useReducedMotion();
-  const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, margin: '-80px 0px' });
-  const trigger = inView || Boolean(reduced);
-
+function TransitionPill({ children }: { children: React.ReactNode }) {
   return (
-    <div ref={ref} className="mt-20">
-      <p className="mono-s text-ink-ash">The loop</p>
+    <span className="engagement-transition-pill">
+      <span className="engagement-transition-pill__surface px-4 py-2 mono-s text-blue-700">
+        {children}
+      </span>
+    </span>
+  );
+}
 
-      {/* Desktop: horizontal 5-station strip with arrows */}
-      <div className="mt-6 hidden md:block">
-        <ol className="grid grid-cols-[1fr_auto_1fr_auto_1fr_auto_1fr_auto_1fr] items-stretch gap-0">
-          {stations.map((s, i) => (
-            <ProcessFlowItem key={s.index} station={s} trigger={trigger} reduced={Boolean(reduced)} delay={i * 110}>
-              {i < stations.length - 1 ? <FlowArrow trigger={trigger} reduced={Boolean(reduced)} delay={i * 110 + 80} /> : null}
-            </ProcessFlowItem>
-          ))}
-        </ol>
+function SolutionChildCard({
+  title,
+  body,
+  className,
+}: {
+  title: string;
+  body: string;
+  className?: string;
+}) {
+  return (
+    <article
+      className={`motion-settle flex min-h-[220px] flex-col rounded-[24px] border border-line-hairline-cool bg-white px-6 py-6 shadow-[0_20px_64px_-58px_rgba(20,17,14,0.24)] md:px-7 md:py-7 ${className ?? ''}`}
+    >
+      {title !== 'Months, not years.' ? (
+        <h3 className="max-w-[14ch] text-[clamp(1.55rem,2vw,2rem)] font-medium leading-[1.06] tracking-[-0.026em] text-ink-black">
+          {title}
+        </h3>
+      ) : null}
+      {title === 'Months, not years.' ? (
+        <div className="mt-4 max-w-[72ch] text-ink-graphite">
+          <h3 className="max-w-[16ch] text-[clamp(1.7rem,2.6vw,2.7rem)] font-medium leading-[1.02] tracking-[-0.032em] text-ink-black">
+            <AccentUnderline delayMs={200}>
+              <span>Months</span>
+            </AccentUnderline>
+            , not years.
+          </h3>
+          <p className="mt-5 max-w-[26ch] text-[clamp(1.05rem,1.55vw,1.28rem)] leading-[1.5] text-ink-graphite md:text-[19px]">
+            Tune explores{' '}
+            <span className="inline-block text-[clamp(2.7rem,5vw,4.6rem)] font-semibold leading-[0.88] tracking-[-0.06em] text-ink-black align-[-0.12em]">
+              100x
+            </span>{' '}
+            more conditions between wet-lab rounds than your team could.
+          </p>
+          <p className="mt-4 max-w-[38ch] text-[15px] leading-[1.62] md:text-[16px]">
+            Years of search compress into months.
+          </p>
+        </div>
+      ) : (
+        <p className="mt-4 max-w-[32ch] text-[15px] leading-[1.62] text-ink-graphite md:text-[16px]">
+          {body}
+        </p>
+      )}
+    </article>
+  );
+}
+
+function SolutionFeatureCard({
+  title,
+  className,
+}: {
+  title: string;
+  className?: string;
+}) {
+  return (
+    <article
+      className={`motion-settle relative flex min-h-[220px] flex-col overflow-hidden rounded-[24px] border border-blue-200/45 px-6 py-6 shadow-[0_28px_84px_-60px_rgba(3,2,122,0.42)] md:px-8 md:py-8 lg:px-9 lg:py-9 ${className ?? ''}`}
+      style={{
+        backgroundImage: 'linear-gradient(135deg, #03027A 0%, #1612B8 52%, #4140FC 100%)',
+      }}
+    >
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 opacity-70"
+        style={{
+          backgroundImage:
+            'radial-gradient(circle at 72% 18%, rgba(205,205,254,0.22) 0%, transparent 28%), radial-gradient(circle at 28% 86%, rgba(205,205,254,0.16) 0%, transparent 32%)',
+        }}
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 h-40"
+        style={{
+          background:
+            'linear-gradient(180deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 58%, transparent 100%)',
+        }}
+      />
+
+      <div className="relative z-10 flex h-full flex-col">
+        <p className="mono-s text-blue-100" style={{ letterSpacing: '0.08em' }}>
+          PREDICTIVE MODEL
+        </p>
+        <h3 className="mt-5 max-w-[13ch] text-[clamp(2rem,4.2vw,3.15rem)] font-medium leading-[1.02] tracking-[-0.038em] text-white">
+          {title}
+        </h3>
       </div>
+    </article>
+  );
+}
 
-      {/* Mobile: vertical stack with down-arrows */}
-      <ol className="mt-6 space-y-4 md:hidden">
-        {stations.map((s, i) => (
-          <li key={s.index} className="flex items-start gap-4">
-            <div className="mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-line-hairline-cool">
-              <StationGlyph index={s.index} size={20} />
-            </div>
-            <div>
-              <p className="mono-s text-ink-ash">Step {String(s.index).padStart(2, '0')}</p>
-              <p className="mt-1 text-[15px] font-medium text-ink-black">{s.label}</p>
-            </div>
-          </li>
-        ))}
-      </ol>
+function LearningLoopComparison() {
+  return (
+    <div className="mt-12 grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-8">
+      <LearningLoopPanel
+        variant="without"
+        label="WITHOUT TUNE"
+        headline="Runs chase clarity."
+        summary="Each experiment mainly answers what should have been obvious earlier, so the team spends wet-lab time buying diagnosis."
+        rows={[
+          {
+            label: 'Between runs',
+            value: 'Wait for data, then interpret manually',
+          },
+          {
+            label: 'Next run is based on',
+            value: 'Debate, intuition, and incomplete readouts',
+          },
+          {
+            label: 'What each run buys',
+            value: 'Clarity about the last run',
+          },
+        ]}
+      />
+      <LearningLoopPanel
+        variant="with"
+        label="WITH TUNE"
+        headline="Runs compound learning."
+        summary="Model updates happen between wet-lab rounds, so each experiment starts from a better hypothesis than the last one."
+        rows={[
+          {
+            label: 'Between runs',
+            value: 'Tune updates the model and narrows uncertainty',
+          },
+          {
+            label: 'Next run is based on',
+            value: 'Model-ranked experiments with expected yield',
+          },
+          {
+            label: 'What each run buys',
+            value: 'A better next decision',
+          },
+        ]}
+      />
     </div>
   );
 }
 
-function ProcessFlowItem({
-  station,
-  trigger,
-  reduced,
-  delay,
-  children,
+function LearningLoopPanel({
+  variant,
+  label,
+  headline,
+  summary,
+  rows,
 }: {
-  station: Station;
-  trigger: boolean;
-  reduced: boolean;
-  delay: number;
-  children?: React.ReactNode;
+  variant: 'without' | 'with';
+  label: string;
+  headline: string;
+  summary: string;
+  rows: Array<{ label: string; value: string }>;
+}) {
+  const isWith = variant === 'with';
+
+  return (
+    <article
+      className={`motion-settle relative overflow-hidden rounded-[28px] border px-6 py-6 shadow-[0_16px_42px_-36px_rgba(20,17,14,0.14)] md:px-8 md:py-8 ${
+        isWith
+          ? 'border-blue-100 bg-[linear-gradient(180deg,rgba(239,239,255,0.86)_0%,rgba(255,255,255,1)_62%)]'
+          : 'border-[#E6E6E8] bg-[linear-gradient(180deg,rgba(244,244,245,0.92)_0%,rgba(241,241,242,0.88)_100%)]'
+      }`}
+    >
+      <div className="relative z-10">
+        <h4
+          className="mt-4 max-w-[12ch] text-[clamp(1.7rem,2.4vw,2.35rem)] font-medium leading-[1.03] tracking-[-0.03em] text-ink-black"
+        >
+          {headline}
+        </h4>
+
+        <div
+          className={`mt-8 overflow-hidden rounded-[22px] ${
+            isWith
+              ? 'bg-[linear-gradient(180deg,#F8FAFF_0%,#EEF3FF_100%)]'
+              : 'bg-[linear-gradient(180deg,#F8F8F9_0%,#F1F1F2_100%)]'
+          }`}
+        >
+          {rows.map((row, index) => (
+            <div
+              key={row.label}
+              className={`grid grid-cols-1 gap-3 px-5 py-5 md:grid-cols-[140px_minmax(0,1fr)] md:gap-6 ${
+                index > 0
+                  ? isWith
+                    ? 'border-t border-[#DCE6FF]'
+                    : 'border-t border-[#E7E7E9]'
+                  : ''
+              }`}
+            >
+              <p
+                className={`mono-s ${isWith ? 'text-[#6D7FAF]' : 'text-[#9E9191]'}`}
+                style={{ letterSpacing: '0.08em' }}
+              >
+                {row.label}
+              </p>
+              <p className="text-[15px] font-medium leading-[1.5] tracking-[-0.012em] text-ink-black md:text-[16px]">
+                {row.value}
+              </p>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-8 grid grid-cols-3 gap-3">
+          <MetricChip
+            label="Conditions"
+            value={isWith ? '100x' : '1x'}
+            tone={isWith ? 'gain' : 'loss'}
+          />
+          <MetricChip
+            label="Time"
+            value={isWith ? 'Months' : 'Years'}
+            tone={isWith ? 'gain' : 'loss'}
+          />
+          <MetricChip
+            label="Cost"
+            value={isWith ? 'Lower' : 'Higher'}
+            tone={isWith ? 'gain' : 'loss'}
+          />
+        </div>
+
+        <div className="mt-8">
+          {isWith ? <LoopWithTune /> : <LoopWithoutTune />}
+        </div>
+
+        <p className="mt-8 max-w-[38ch] text-[15px] leading-[1.65] text-ink-graphite md:text-[16px]">
+          {summary}
+        </p>
+      </div>
+    </article>
+  );
+}
+
+function FragmentStep({
+  label,
+  value,
+  showArrow,
+  arrowTone,
+}: {
+  label: string;
+  value: string;
+  showArrow: boolean;
+  arrowTone: 'with' | 'without';
 }) {
   return (
     <>
-      <motion.li
-        className="flex flex-col items-center gap-3 px-2"
-        initial={{ opacity: 0, y: 6 }}
-        animate={trigger ? { opacity: 1, y: 0 } : {}}
-        transition={{ duration: reduced ? 0 : 0.4, delay: reduced ? 0 : delay / 1000, ease: [0.16, 1, 0.3, 1] }}
-      >
-        <div className="flex h-16 w-16 items-center justify-center rounded-full border border-line-hairline-cool bg-white">
-          <StationGlyph index={station.index} size={28} />
-        </div>
-        <p className="mono-s tabular text-ink-ash">
-          {String(station.index).padStart(2, '0')}
+      <div className="rounded-[22px] bg-[#F3F3F4] px-5 py-5">
+        <p className="mono-s text-[#A5A8B0]" style={{ letterSpacing: '0.12em' }}>
+          {label}
         </p>
-        <p className="text-center text-[13px] font-medium leading-tight text-ink-black">
-          {station.label}
+        <p className="mt-4 max-w-[12ch] text-[15px] font-medium leading-[1.42] tracking-[-0.015em] text-ink-black md:text-[16px]">
+          {value}
         </p>
-      </motion.li>
-      {children}
+      </div>
+      {showArrow ? <FragmentArrow tone={arrowTone} /> : null}
     </>
   );
 }
 
-function FlowArrow({ trigger, reduced, delay }: { trigger: boolean; reduced: boolean; delay: number }) {
+function FragmentArrow({ tone }: { tone: 'with' | 'without' }) {
   return (
-    <li className="flex h-16 items-center justify-center self-start pt-5" aria-hidden>
-      <motion.svg
-        viewBox="0 0 40 12"
-        className="h-3 w-10"
-        initial={{ opacity: 0, x: -4 }}
-        animate={trigger ? { opacity: 1, x: 0 } : {}}
-        transition={{ duration: reduced ? 0 : 0.35, delay: reduced ? 0 : delay / 1000 }}
-      >
-        <line x1={2} y1={6} x2={32} y2={6} stroke="#A1A1FE" strokeWidth={1} strokeDasharray="2 3" />
-        <path d="M 32 2 L 38 6 L 32 10" fill="none" stroke="#4140FC" strokeWidth={1.25} strokeLinecap="round" strokeLinejoin="round" />
-      </motion.svg>
-    </li>
+    <div className="hidden items-center justify-center lg:flex" aria-hidden>
+      <svg viewBox="0 0 36 16" className="h-4 w-9">
+        <line
+          x1={2}
+          y1={8}
+          x2={24}
+          y2={8}
+          stroke={tone === 'with' ? '#FF7A14' : '#C9D3E2'}
+          strokeWidth={1}
+          strokeDasharray="2 4"
+        />
+        <path
+          d="M 24 4 L 32 8 L 24 12"
+          fill="none"
+          stroke={tone === 'with' ? '#FF7A14' : '#C9D3E2'}
+          strokeWidth={1.2}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </div>
   );
 }
 
-// Per-station glyph — abstract scientific shapes, not UI icons.
-function StationGlyph({ index, size }: { index: number; size: number }) {
-  switch (index) {
-    case 1:
-      // Initial design — small DOE grid
-      return (
-        <svg viewBox="0 0 32 32" width={size} height={size}>
-          {[8, 16, 24].map((y) =>
-            [8, 16, 24].map((x) => (
-              <circle key={`${x}-${y}`} cx={x} cy={y} r={1.5} fill="#4140FC" />
-            )),
-          )}
+function LoopWithoutTune() {
+  return (
+    <div className="rounded-[22px] bg-[#EFEFF0] p-5 md:p-6">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-[1fr_auto_1fr_auto_1fr] sm:items-center">
+        <LoopStep label="Run experiment" tone="neutral" />
+        <LoopArrow tone="neutral" />
+        <LoopStep label="Wait for data" tone="neutral" />
+        <LoopArrow tone="neutral" />
+        <LoopStep label="Debate what happened" tone="neutral" />
+      </div>
+
+      <div className="mt-5 flex items-center gap-3 text-ink-ash">
+        <span className="mono-s">loop reset</span>
+        <svg viewBox="0 0 84 16" className="h-4 w-20" aria-hidden>
+          <path
+            d="M 82 14 C 52 14 28 12 12 6"
+            fill="none"
+            stroke="#A9A9AE"
+            strokeWidth="1.15"
+            strokeLinecap="round"
+            strokeDasharray="2 4"
+          />
+          <path
+            d="M 18 2 L 10 6 L 18 10"
+            fill="none"
+            stroke="#A9A9AE"
+            strokeWidth="1.15"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
         </svg>
-      );
-    case 2:
-      // Run experiments — oscilloscope trace
-      return (
-        <svg viewBox="0 0 32 32" width={size} height={size}>
-          <path d="M 4 16 L 8 10 L 12 22 L 16 8 L 20 24 L 24 12 L 28 18" fill="none" stroke="#4140FC" strokeWidth={1.25} strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      );
-    case 3:
-      // Train hybrid model — concentric mech+data rings + uncertainty halo
-      return (
-        <svg viewBox="0 0 32 32" width={size} height={size}>
-          <circle cx={16} cy={16} r={11} fill="none" stroke="#A1A1FE" strokeWidth={0.8} strokeDasharray="2 2" />
-          <circle cx={16} cy={16} r={7} fill="none" stroke="#4140FC" strokeWidth={1} />
-          <circle cx={16} cy={16} r={3} fill="#0A07D4" />
-        </svg>
-      );
-    case 4:
-      // Recommend next — branching arrow
-      return (
-        <svg viewBox="0 0 32 32" width={size} height={size}>
-          <path d="M 6 16 L 18 16" stroke="#4140FC" strokeWidth={1.25} strokeLinecap="round" />
-          <path d="M 18 16 L 26 8" stroke="#4140FC" strokeWidth={1.25} strokeLinecap="round" />
-          <path d="M 18 16 L 26 24" stroke="#A1A1FE" strokeWidth={1} strokeLinecap="round" strokeDasharray="2 2" />
-          <path d="M 23 6 L 27 8 L 25 12" fill="none" stroke="#4140FC" strokeWidth={1.25} strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      );
-    case 5:
-      // Update feasible region — shrinking polygon inside outer bound
-      return (
-        <svg viewBox="0 0 32 32" width={size} height={size}>
-          <rect x={4} y={4} width={24} height={24} fill="none" stroke="#A1A1FE" strokeWidth={0.8} strokeDasharray="2 2" />
-          <polygon points="12,12 22,12 24,20 18,24 10,20" fill="#4140FC" fillOpacity={0.18} stroke="#4140FC" strokeWidth={1} />
-        </svg>
-      );
-    default:
-      return null;
-  }
+      </div>
+    </div>
+  );
 }
 
-// ─── Feasible region evolution ──────────────────────────────────────────────
-// 4 panels showing the feasible region shrinking across cycles. Sample points
-// concentrate as the operating zone narrows toward the optimum.
+function LoopWithTune() {
+  return (
+    <div className="rounded-[22px] bg-[linear-gradient(180deg,#F8FAFF_0%,#EEF3FF_100%)] p-5 md:p-6">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-[1fr_auto_1fr_auto_1fr] sm:items-center">
+        <LoopStep label="Run experiment" tone="bright" />
+        <LoopArrow tone="bright" />
+        <LoopStep label="Update model" tone="bright" />
+        <LoopArrow tone="bright" />
+        <LoopStep label="Choose next best run" tone="bright" />
+      </div>
 
-function FeasibleRegionEvolution() {
-  const reduced = useReducedMotion();
-  const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, margin: '-80px 0px' });
-  const trigger = inView || Boolean(reduced);
+      <div className="mt-5 flex items-center gap-3 text-blue-100">
+        <span className="mono-s text-[#6D7FAF]">learning compounds</span>
+        <svg viewBox="0 0 84 16" className="h-4 w-20" aria-hidden>
+          <path
+            d="M 82 14 C 52 14 28 12 12 6"
+            fill="none"
+            stroke="#A9B9E6"
+            strokeWidth="1.15"
+            strokeLinecap="round"
+            strokeDasharray="2 4"
+          />
+          <path
+            d="M 18 2 L 10 6 L 18 10"
+            fill="none"
+            stroke="#4A67D6"
+            strokeWidth="1.2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </div>
+    </div>
+  );
+}
 
-  // Per-cycle: feasible polygon (normalized 0-100), sample points, optimum target.
-  const cycles = [
-    {
-      label: 'Cycle 1',
-      poly: '15,20 80,18 88,72 78,86 22,82 12,72',
-      points: [[28, 32], [62, 28], [70, 68], [38, 78], [22, 56]],
-    },
-    {
-      label: 'Cycle 2',
-      poly: '28,32 70,30 76,68 64,80 32,72',
-      points: [[40, 42], [58, 40], [66, 64], [42, 70], [50, 50], [60, 56]],
-    },
-    {
-      label: 'Cycle 3',
-      poly: '38,42 64,42 68,62 56,72 42,68',
-      points: [[44, 50], [56, 48], [62, 58], [48, 64], [52, 56], [58, 52], [50, 60]],
-    },
-    {
-      label: 'Cycle 4',
-      poly: '46,50 60,50 62,60 54,66 48,62',
-      points: [[50, 54], [56, 54], [54, 58], [52, 56], [55, 56], [53, 60], [57, 56], [51, 58], [55, 60]],
-    },
-  ];
+function LoopStep({
+  label,
+  tone,
+}: {
+  label: string;
+  tone: 'neutral' | 'bright';
+}) {
+  return (
+    <div
+      className={`rounded-[18px] border px-4 py-4 text-center ${
+        tone === 'bright'
+          ? 'border-[#D7E2FF] bg-white text-ink-black'
+          : 'border-line-hairline-cool bg-white text-ink-black'
+      }`}
+    >
+      <p className="text-[14px] font-medium leading-[1.4] tracking-[-0.012em]">
+        {label}
+      </p>
+    </div>
+  );
+}
+
+function LoopArrow({ tone }: { tone: 'neutral' | 'bright' }) {
+  return (
+    <div className="flex items-center justify-center" aria-hidden>
+      <svg viewBox="0 0 36 16" className="h-4 w-9">
+        <line
+          x1={2}
+          y1={8}
+          x2={24}
+          y2={8}
+          stroke={tone === 'bright' ? '#A9B9E6' : '#A9A9AE'}
+          strokeWidth={1}
+          strokeDasharray="2 4"
+        />
+        <path
+          d="M 24 4 L 32 8 L 24 12"
+          fill="none"
+          stroke={tone === 'bright' ? '#4A67D6' : '#4140FC'}
+          strokeWidth={1.2}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </div>
+  );
+}
+
+function MetricChip({
+  label,
+  value,
+  tone,
+}: {
+  label: string;
+  value: string;
+  tone: 'gain' | 'loss';
+}) {
+  const isGain = tone === 'gain';
 
   return (
-    <div ref={ref} className="mt-24">
-      <p className="mono-s text-ink-ash">Feasible region narrows across cycles</p>
-      <div className="mt-6 grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6">
-        {cycles.map((c, i) => (
-          <motion.div
-            key={c.label}
-            className="rounded-md border border-line-hairline-cool bg-white p-4"
-            initial={{ opacity: 0, y: 8 }}
-            animate={trigger ? { opacity: 1, y: 0 } : {}}
-            transition={{
-              duration: reduced ? 0 : 0.5,
-              delay: reduced ? 0 : 0.1 + i * 0.18,
-              ease: [0.16, 1, 0.3, 1],
-            }}
-          >
-            <svg viewBox="0 0 100 100" className="h-auto w-full">
-              {/* axes */}
-              <line x1={6} y1={94} x2={94} y2={94} stroke="#D1D1D3" strokeWidth={0.5} />
-              <line x1={6} y1={6} x2={6} y2={94} stroke="#D1D1D3" strokeWidth={0.5} />
-              {/* outer prior region (faint) */}
-              <rect x={6} y={6} width={88} height={88} fill="none" stroke="#E5E5E7" strokeWidth={0.5} strokeDasharray="2 2" />
-              {/* current feasible region */}
-              <motion.polygon
-                points={c.poly}
-                fill="#A1A1FE"
-                fillOpacity={0.22}
-                stroke="#4140FC"
-                strokeWidth={0.8}
-                initial={{ opacity: 0 }}
-                animate={trigger ? { opacity: 1 } : {}}
-                transition={{ duration: reduced ? 0 : 0.5, delay: reduced ? 0 : 0.25 + i * 0.18 }}
-              />
-              {/* optimum marker on cycle 4 */}
-              {i === 3 && (
-                <g>
-                  <circle cx={54} cy={56} r={2} fill="#FBFC40" stroke="#0A07D4" strokeWidth={0.7} />
-                </g>
-              )}
-              {/* sample points */}
-              {c.points.map((p, j) => (
-                <motion.circle
-                  key={j}
-                  cx={p[0]}
-                  cy={p[1]}
-                  r={1.6}
-                  fill="#0A07D4"
-                  initial={{ opacity: 0, scale: 0.4 }}
-                  animate={trigger ? { opacity: 1, scale: 1 } : {}}
-                  transition={{
-                    duration: reduced ? 0 : 0.3,
-                    delay: reduced ? 0 : 0.4 + i * 0.18 + j * 0.04,
-                    ease: [0.16, 1, 0.3, 1],
-                  }}
-                  style={{ transformOrigin: `${p[0]}px ${p[1]}px`, transformBox: 'fill-box' }}
-                />
-              ))}
-            </svg>
-            <p className="mono-s mt-3 text-center text-ink-graphite">{c.label}</p>
-          </motion.div>
-        ))}
-      </div>
+    <div
+      className={`rounded-[18px] border px-4 py-4 ${
+        isGain
+          ? 'border-[#D7E2FF] bg-[linear-gradient(180deg,#FBFCFF_0%,#EEF3FF_100%)]'
+          : 'border-[#E7DCDC] bg-[linear-gradient(180deg,#F7F4F4_0%,#F1EEEE_100%)]'
+      }`}
+    >
+      <p
+        className={`mono-s ${isGain ? 'text-[#6D7FAF]' : 'text-[#9E9191]'}`}
+        style={{ letterSpacing: '0.08em' }}
+      >
+        {label}
+      </p>
+      <p
+        className={`mt-3 text-[clamp(1.45rem,2vw,2rem)] font-medium leading-none tracking-[-0.03em] ${
+          isGain ? 'text-[#3456C5]' : 'text-[#A85D5D]'
+        }`}
+      >
+        {value}
+      </p>
     </div>
   );
 }

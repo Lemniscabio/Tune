@@ -17,6 +17,10 @@ const DOT_RADIUS = 1.2;
 const DOT_BASE: [number, number, number] = [161, 161, 254];   // blue-200
 const DOT_BRIGHT: [number, number, number] = [205, 205, 254]; // blue-100
 const PULSE_TINT: [number, number, number] = [251, 252, 64];  // yellow-50
+const HOVER_RADIUS_PX = 138;
+const HOVER_FALLOFF_POWER = 1.6;
+const HOVER_ALPHA_BOOST = 7.56;
+const HOVER_ALPHA_CAP = 7.74;
 
 const PULSE_LIFE_MS = 900;
 const PULSE_SPEED_PX_PER_MS = 0.55; // expanding wavefront speed
@@ -98,11 +102,11 @@ export function DotLattice() {
             const dx = x - mouseX;
             const dy = y - mouseY;
             const d2 = dx * dx + dy * dy;
-            const R = 120;
+            const R = HOVER_RADIUS_PX;
             if (d2 < R * R) {
               const d = Math.sqrt(d2);
-              mix = (1 - d / R) ** 2;
-              alpha = Math.min(0.62, alpha + mix * 0.42);
+              mix = (1 - d / R) ** HOVER_FALLOFF_POWER;
+              alpha = Math.min(HOVER_ALPHA_CAP, alpha + mix * HOVER_ALPHA_BOOST);
             }
           }
 

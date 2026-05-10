@@ -32,10 +32,10 @@ const tuneContent: ProductPageContent = {
   // §01 — Hero. Pure value-prop framing: bridge the 0→pilot gap.
   hero: {
     eyebrow: '',
-    headlinePre: 'From biology that works to a ',
+    headlinePre: 'Move from promising biology to a ',
     headlineAccent: 'pilot-ready',
-    headlinePost: ' process.',
-    sub: 'Most fermentation programs lose 12–24 months between proving the biology and producing an optimizable process. Tune is the senior wet+dry team, fermentation biologists, process engineers, and modellers under one roof, that closes the gap with model-guided optimization.',
+    headlinePost: ' fermentation process.',
+    sub: 'Lemnisca’s Tune accelerates early-stage fermentation, moving teams from shake flask to pilot scale 2x faster. It handles the technical heavy lifting, transforming data into precise process decisions. Stop wasting runs on blind optimization and start scaling with absolute confidence."',
     primaryCta: {
       label: 'Apply',
       // TODO: swap to live Calendly URL when ready (see CALENDLY_URL in shared.content.ts).
@@ -53,51 +53,133 @@ const tuneContent: ProductPageContent = {
   // Lead second sentence from Slide 2 ("noise drowns the signal"). Renumbered to 02.
   problemSection: {
     number: '02',
+    eyebrow: 'PROBLEM',
     headline: 'The 0 → pilot gap',
-    lead: 'Most fermentation programs lose 12–24 months between proving biology and producing a pilot-ready process, not because of effort, because there is no system.',
-    itemsLabel: 'Four linked problems',
+    lead: 'Most teams are not starting from zero. They have signal, runs, and data — but not a process system that can reliably move them to pilot.',
     items: [
       {
         index: '01',
-        title: 'Variables to prioritise',
-        body: '8–12 candidate variables, no clear ranking of which ones move the KPI.',
-        caption: '8–12 variables · unranked · coupled',
+        label: 'ACUTE TRIGGER',
+        title:
+          "Your fermentation process isn't hitting the productivity target that makes your molecule commercially viable.",
+        body: '',
       },
       {
         index: '02',
-        title: 'Baseline to stabilise',
-        body: 'Replicate-to-replicate CV often above 15%; effect size hidden in noise.',
-        caption: 'CV ≥ 15% · effect drowned by noise',
+        label: 'DATA GAP',
+        title: "You can't fix what you can't diagnose.",
+        body: "You have fermentation data. It doesn't tell you why productivity has stalled, or where to start.",
       },
       {
         index: '03',
-        title: 'Assays to qualify',
-        body: 'Method drift larger than the effect size you are trying to rank.',
-        caption: 'method drift > effect size',
+        label: 'MODEL GAP',
+        title: 'Trial and error takes years.',
+        body: "Every cycle of guess-and-check costs months. Competitors don't wait.",
       },
       {
         index: '04',
-        title: 'Experiments to redesign',
-        body: 'Strain, media, feed, induction, inoculum. Structured optimization is premature.',
-        caption: 'no design prior · premature optimization',
+        label: 'COST OF THE GAP',
+        title: 'Wet-lab runs are expensive.',
+        body: 'Without direction, most of your R&D budget goes to experiments that teach you nothing.',
+        punchline: 'Budget goes in. Clarity does not come out.',
       },
     ],
-    // Pivot line — distilled from Slide 6 row 5 ("Paid optimization would learn
-    // noise, not biology") and Slide 2's "noise drowns the signal."
-    // pivotLine: 'Tune is the system that bridges the gap.',
-    // pivotAccent: 'noise',
   },
 
-  // §03 — How Tune works · Method.
-  // Reframed from "How paid Tune runs" to method-agnostic systems explanation.
-  // Loop nodes + candidates remain the visual core (Slide 7). Mode A/B content
-  // is preserved on this object but rendered in §04 as the engagement modes.
+  engagementJourney: {
+    number: '04',
+    eyebrow: 'CUSTOMER JOURNEY',
+    headline: 'A guided learning loop for fermentation process development.',
+    intro:
+      'Tune combines bioprocess engineering, process data, modelling, and experimental strategy to make each run more useful than the last.',
+    trustLine:
+      'Diagnose the process → Run the learning loops → Validate recommendations → Build the pilot-ready package',
+    steps: [
+      {
+        index: '01',
+        title: 'Diagnose the process',
+        body: 'Read the baseline, the assay noise, and the operating constraints before the team spends another round guessing.',
+      },
+      {
+        index: '02',
+        title: 'Build the learning loop',
+        body: 'Combine biology, process logic, and run history into a model that keeps learning between wet-lab rounds.',
+      },
+      {
+        index: '03',
+        title: 'Choose the next experiments',
+        body: 'Rank the next conditions by expected yield, uncertainty reduction, and pilot relevance before the next run starts.',
+      },
+      {
+        index: '04',
+        title: 'Build the pilot-ready package',
+        body: 'Turn repeated learning into a process package your team can defend, transfer, and carry into scale-up.',
+      },
+    ],
+    transitionLine: 'Each pass through the loop makes the next run more targeted and more legible.',
+    programHeadline: 'A guided path from diagnosis to pilot readiness.',
+    programIntro:
+      'Tune carries the process reasoning between rounds, so the team stops spending time re-learning what the last experiment should already have settled.',
+    loopNodes: ['Wet experiment', 'Data', 'Predictive model', 'Recommendation', 'Next run'],
+    modelLabel: 'PREDICTIVE MODEL',
+    modelPoints: [
+      'Learns from each run',
+      'Ranks process variables',
+      'Tracks uncertainty',
+      'Recommends the next experiment',
+      'Narrows the feasible region',
+    ],
+    heavyLiftingTitle: 'Lemnisca carries the technical heavy lifting.',
+    heavyLiftingBody:
+      'We handle the modelling, experimental design, interpretation, and next-run recommendation so your team does not burn months in unguided iteration.',
+    modes: [
+      {
+        letter: 'A',
+        title: 'Partner wet lab + Lemnisca dry lab',
+        description:
+          'Your team or wet-lab partner runs the experiments. Lemnisca designs, models, interprets, and recommends each next run.',
+        bestFit: 'Best when you already have lab capacity.',
+      },
+      {
+        letter: 'B',
+        title: 'Lemnisca integrated wet + dry lab',
+        description:
+          'Lemnisca runs the wet lab and modelling loop together as one integrated team.',
+        bestFit: 'Best when speed or lab capacity is the bottleneck.',
+      },
+    ],
+  },
+
+  // §03 — Solution / system explanation.
+  // The section now explains the decision layer in a static 3-part structure:
+  // Evidence In -> Hybrid Model -> Decisions Out.
   paidLoop: {
     number: '03',
-    headline: "Tune's method.",
+    headline: 'Tune builds the decision layer your process is missing.',
     intro:
-      'Tune runs an iterative hybrid-model optimization loop. Each cycle isolates leverage, ranks variables by uncertainty-weighted effect, and proposes the next experiment.',
-    vizCaption: 'Each cycle improves learning per experiment.',
+      'Your team may already have runs, assays, recipes, deviations, and promising biology. Tune connects those signals into a hybrid model that can rank variables, expose uncertainty, and derive the next experiment.',
+    solutionBento: {
+      featureTitle:
+        'Tune is a predictive model of your fermentation process. It changes how you find a commercial recipe.',
+      children: [
+        {
+          title: 'Every wet-lab run earns its keep.',
+          body:
+            'Tune picks the experiments most likely to increase productivity. No exploratory runs. No wasted batches.',
+        },
+        {
+          title: "Tune tells you what's wrong.",
+          body:
+            'Its predictive model finds the bottleneck in your process, so you stop guessing and start fixing.',
+        },
+        {
+          title: 'Months, not years.',
+          body:
+            'Tune explores 100x more conditions between wet-lab rounds than your team could. Years of search compress into months.',
+        },
+      ],
+    },
+    vizCaption: 'Every experiment updates the model. Every model update improves the next experiment.',
     chipsLabel: 'Candidate variables',
     loopNodes: [
       { label: 'Initial design' },
@@ -116,6 +198,30 @@ const tuneContent: ProductPageContent = {
       { label: 'Agitation' },
       { label: 'Inoculum' },
     ],
+    evidenceInputs: [
+      { label: 'Run history' },
+      { label: 'Recipes' },
+      { label: 'Feed strategy' },
+      { label: 'Assay notes' },
+      { label: 'Metadata' },
+      { label: 'Deviations' },
+    ],
+    modelComponents: [
+      { label: 'Biological constraints' },
+      { label: 'Process logic' },
+      { label: 'Experimental data' },
+      { label: 'Uncertainty tracking' },
+    ],
+    decisionOutputs: [
+      { label: 'Readiness verdict' },
+      { label: 'Variable ranking' },
+      { label: 'Next-run recommendation' },
+      { label: 'Uncertainty map' },
+      { label: 'Feasible-region update' },
+      { label: 'Pilot-readiness confidence' },
+    ],
+    modelTagline: 'MECHANISTIC + STATISTICAL · UNCERTAINTY-AWARE',
+    microcopy: 'Every experiment updates the model. Every model update improves the next experiment.',
     // The mode cards are rendered in §04 (Engagement) — the structure of the
     // partnership belongs with the engagement narrative, not the method.
     modesLabel: 'Two engagement modes',
@@ -129,6 +235,39 @@ const tuneContent: ProductPageContent = {
         letter: 'B',
         title: 'Lemnisca integrated wet + dry lab',
         body: 'Lemnisca runs the wet lab and the modelling loop together as one team.',
+      },
+    ],
+  },
+
+  deliverablesSection: {
+    eyebrow: 'What Tune delivers',
+    headline: 'A process package ready for the first pilot run.',
+    intro:
+      'The end outcome of Tune is not more analysis. It is a practical, technically grounded package that helps your team execute the first pilot run with confidence.',
+    note:
+      'Tune does not replace your wet lab. It helps your wet lab learn faster, decide better, and arrive at a process that is ready to be tested at pilot scale.',
+    packageLabel: 'Pilot-Ready Process Package',
+    cards: [
+      {
+        title: 'Process recipe and operating window',
+        body:
+          'A defined bench-scale process recipe with critical ranges, control logic, and process window.',
+        hoverNote:
+          'Helps the team know what to run and where the process has room to operate.',
+      },
+      {
+        title: 'Pilot run protocol',
+        body:
+          'A practical execution plan for the first pilot run: what to run, measure, watch, and decide.',
+        hoverNote:
+          'Turns bench learning into a practical first pilot execution plan.',
+      },
+      {
+        title: 'Model-backed expectations and risks',
+        body:
+          'Expected pilot performance ranges, key uncertainties, early warning signals, and success criteria.',
+        hoverNote:
+          'Sets expected ranges, warning signs, and success criteria before the batch begins.',
       },
     ],
   },
@@ -269,10 +408,17 @@ const tuneContent: ProductPageContent = {
   // §04 — Engagement · Start.
   sprintCta: {
     number: '04',
-    headline: 'Start with one program and one 10-day technical answer.',
+    headline: 'Start with a focused free 10-day technical pilot.',
     body: [
-      'Share one fermentation program. Lemnisca confirms fit, sends a data request, and runs a 10-day Tune sprint. You receive a technical report and an expert walkdown with your team.',
-      'If there is no fit, you keep the report. If there is fit, Lemnisca proposes a focused paid engagement around the highest-value technical decision.',
+      'The first step into Tune is a 10-day technical pilot. We review your current program, available run data, and scale-up context to determine whether a longer Tune engagement can create a meaningful path toward a pilot-ready process.',
+      'If your biology works but your process is not yet pilot-ready, Tune may be the next step.',
+      'Request a Tune fit conversation. If the program is a strong fit, we begin with a 10-day technical pilot and then define the longer engagement required to build the process package for your first pilot run.',
+    ],
+    steps: [
+      'Understand the program',
+      'Review the data',
+      'Identify the uncertainty',
+      'Recommend the next move',
     ],
     formLabels: {
       name: 'Name',

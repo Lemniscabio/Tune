@@ -1,7 +1,3 @@
-'use client';
-
-import { motion, useInView, useReducedMotion } from 'motion/react';
-import { useRef } from 'react';
 import type { ProblemSection } from '@/content/schema';
 import { Eyebrow } from '@/design-system/primitives/Eyebrow';
 
@@ -10,242 +6,121 @@ type ProblemAtStageProps = {
   accent?: 'tune' | 'thrust' | 'lemnisca';
 };
 
-const EVIDENCE_CHIPS = [
-  'Scattered experiments. Low learning per run.',
-  'Optimization on a shifting baseline.',
-  'Debate, not derivation, picks the next experiment.',
+const DESKTOP_LAYOUT = [
+  'lg:col-span-5 lg:row-span-2',
+  'lg:col-span-4',
+  'lg:col-span-3',
+  'lg:col-span-7',
 ] as const;
-
-const EASE = [0.16, 1, 0.3, 1] as const;
 
 export function ProblemAtStage({ section }: ProblemAtStageProps) {
   return (
     <section className="relative bg-white">
       <div className="mx-auto max-w-[1240px] px-6 pt-24 pb-32 md:px-10 md:pt-32 md:pb-40 lg:px-14">
         <div className="max-w-[1040px]">
-          <Eyebrow>Section {section.number} · The problem</Eyebrow>
+          <Eyebrow>{section.eyebrow}</Eyebrow>
           <h2 className="display-section mt-5 max-w-[14ch] text-ink-black md:max-w-none">
             {section.headline}
           </h2>
-          <p className="body-xl mt-8 max-w-[980px] text-ink-graphite/78">
+          <p className="body-xl mt-8 max-w-[60ch] text-ink-graphite/82">
             {section.lead}
           </p>
         </div>
 
-        <div className="mt-16 flex items-center gap-3">
-          <span aria-hidden className="block h-px w-10 bg-line-hairline-cool" />
-          <p className="mono-s tabular text-ink-ash">{section.itemsLabel}</p>
-        </div>
-
-        <div className="mt-8 grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
+        <div className="mt-16 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-12 lg:gap-6">
           {section.items.map((item, index) => (
-            <DiagnosticCard
+            <ProblemBentoCard
               key={item.index}
-              index={item.index}
               title={item.title}
-              caption={item.caption ?? item.body}
-              visual={item.index}
-              delayMs={index * 90}
+              body={item.body}
+              punchline={item.punchline}
+              tone={index === 0 ? 'anchor' : index === 3 ? 'consequence' : 'default'}
+              className={DESKTOP_LAYOUT[index]}
             />
           ))}
         </div>
-
-        <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-3">
-          {EVIDENCE_CHIPS.map((chip) => (
-            <div
-              key={chip}
-              className="border border-line-hairline-cool bg-neutral-50 px-5 py-4 text-[15px] leading-[1.45] tracking-[-0.008em] text-ink-black"
-            >
-              {chip}
-            </div>
-          ))}
-        </div>
-
-        {section.pivotLine && (
-          <div className="mt-10 border-l-4 border-blue-500 bg-blue-50 px-6 py-5 text-[18px] font-medium tracking-[-0.01em] text-blue-900">
-            {section.pivotLine}
-          </div>
-        )}
       </div>
     </section>
   );
 }
 
-function DiagnosticCard({
-  index,
+function ProblemBentoCard({
   title,
-  caption,
-  visual,
-  delayMs,
+  body,
+  punchline,
+  tone,
+  className,
 }: {
-  index: string;
   title: string;
-  caption: string;
-  visual: string;
-  delayMs: number;
+  body: string;
+  punchline?: string;
+  tone: 'anchor' | 'default' | 'consequence';
+  className?: string;
 }) {
-  const reduced = useReducedMotion();
-  const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, margin: '-80px 0px' });
+  const cardClass =
+    tone === 'anchor'
+      ? 'border-blue-100 bg-[linear-gradient(180deg,rgba(239,239,255,0.86)_0%,rgba(255,255,255,1)_62%)] shadow-[0_28px_84px_-60px_rgba(3,2,122,0.3)]'
+      : tone === 'consequence'
+        ? 'border-line-hairline-cool bg-neutral-50/72 shadow-[0_20px_64px_-56px_rgba(20,17,14,0.32)]'
+        : 'border-line-hairline-cool bg-white shadow-[0_20px_64px_-58px_rgba(20,17,14,0.24)]';
+
+  const titleClass =
+    tone === 'anchor'
+      ? 'max-w-[10ch] text-[clamp(2rem,4vw,3rem)] leading-[0.98] tracking-[-0.045em]'
+      : tone === 'consequence'
+        ? 'max-w-[26ch] text-[clamp(1.7rem,2.4vw,2.35rem)] leading-[1.02] tracking-[-0.032em]'
+        : 'max-w-[14ch] text-[clamp(1.55rem,2vw,2rem)] leading-[1.06] tracking-[-0.026em]';
+
+  const bodyClass =
+    tone === 'anchor'
+      ? 'max-w-[28ch] text-[16px] leading-[1.62] text-ink-graphite md:text-[17px]'
+      : tone === 'consequence'
+        ? 'max-w-[64ch] text-[15px] leading-[1.62] text-ink-graphite md:text-[16px]'
+        : 'max-w-[32ch] text-[15px] leading-[1.62] text-ink-graphite md:text-[16px]';
 
   return (
-    <motion.article
-      ref={ref}
-      initial={{ opacity: 0, y: 14 }}
-      animate={inView || reduced ? { opacity: 1, y: 0 } : {}}
-      transition={{
-        duration: reduced ? 0 : 0.55,
-        delay: reduced ? 0 : delayMs / 1000,
-        ease: EASE,
-      }}
-      className="rounded-md border border-line-hairline-cool bg-white p-6"
-      style={{
-        boxShadow: '0 1px 0 rgba(20,17,14,0.03), 0 18px 36px -24px rgba(65,64,252,0.16)',
-      }}
+    <article
+      className={`motion-settle flex min-h-[220px] flex-col rounded-[24px] border px-6 py-6 md:px-7 md:py-7 ${cardClass} ${className ?? ''}`}
     >
-      <div className="flex items-center gap-3">
-        <span aria-hidden className="block h-px w-8 bg-line-hairline-cool" />
-        <span className="mono-s tabular text-ink-ash">{index}</span>
-      </div>
+      <h3 className={`whitespace-pre-line font-medium text-ink-black ${titleClass}`}>
+        {tone === 'anchor' ? <AnchorTitle title={title} /> : title}
+      </h3>
+      {body ? <p className={`mt-4 ${bodyClass}`}>{body}</p> : null}
 
-      <div className="mt-6 flex h-[148px] items-center justify-center border-y border-line-hairline-cool/70">
-        <Instrument visual={visual} />
-      </div>
-
-      <div className="mt-6">
-        <h3 className="text-[20px] font-medium leading-tight tracking-[-0.016em] text-ink-black">
-          {title}
-        </h3>
-        <p className="mono-s mt-3 text-ink-graphite">{caption}</p>
-      </div>
-    </motion.article>
+      {punchline ? (
+        <p className="mt-auto max-w-[28ch] pt-8 text-[24px] font-medium leading-none tracking-[-0.03em] text-blue-900">
+          {punchline}
+        </p>
+      ) : null}
+    </article>
   );
 }
 
-function Instrument({ visual }: { visual: string }) {
-  switch (visual) {
-    case '01':
-      return <VariableLattice />;
-    case '02':
-      return <SignalNoise />;
-    case '03':
-      return <AssayDrift />;
-    case '04':
-      return <DesignMatrix />;
-    default:
-      return null;
-  }
-}
-
-function VariableLattice() {
-  const nodes = [
-    { x: 36, y: 84, l: 'pH' },
-    { x: 78, y: 52, l: 'DO' },
-    { x: 118, y: 88, l: 'F' },
-    { x: 160, y: 58, l: 'T' },
-    { x: 198, y: 84, l: 'I' },
-    { x: 240, y: 54, l: 'M' },
-  ] as const;
-  const edges: Array<[number, number]> = [
-    [0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [0, 3], [1, 4], [2, 5],
-  ];
-
+function AnchorTitle({ title }: { title: string }) {
   return (
-    <svg viewBox="0 0 280 120" className="h-full w-full" role="img" aria-label="Coupled variables">
-      {edges.map(([a, b], idx) => (
-        <line
-          key={idx}
-          x1={nodes[a].x}
-          y1={nodes[a].y}
-          x2={nodes[b].x}
-          y2={nodes[b].y}
-          stroke="#7473FD"
-          strokeOpacity="0.32"
-          strokeWidth="1"
-          strokeDasharray="3 4"
-        />
-      ))}
-      {nodes.map((node) => (
-        <g key={node.l}>
-          <circle cx={node.x} cy={node.y} r="5" fill="#A1A1FE" stroke="#4140FC" strokeWidth="1" />
-          <text x={node.x} y={node.y + 18} textAnchor="middle" fontSize="9" fontFamily="var(--font-jetbrains)" fill="#4A453E">
-            {node.l}
-          </text>
-        </g>
-      ))}
-    </svg>
-  );
-}
-
-function SignalNoise() {
-  const points = [
-    [24, 68], [44, 44], [64, 86], [84, 58], [104, 94], [124, 50],
-    [144, 78], [164, 38], [184, 90], [204, 56], [224, 82], [244, 48],
-  ] as const;
-  const path = points.map((point, index) => `${index === 0 ? 'M' : 'L'} ${point[0]} ${point[1]}`).join(' ');
-
-  return (
-    <svg viewBox="0 0 280 120" className="h-full w-full" role="img" aria-label="Signal hidden in noise">
-      <rect x="20" y="34" width="236" height="56" fill="#A1A1FE" fillOpacity="0.18" />
-      <rect x="20" y="60" width="236" height="6" fill="#14110E" fillOpacity="0.82" />
-      <path d={path} fill="none" stroke="#0A07D4" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" />
-      <line x1="20" y1="104" x2="260" y2="104" stroke="#D1D1D3" strokeWidth="0.75" />
-      <text x="264" y="62" fontSize="10" fontFamily="var(--font-newsreader)" fontStyle="italic" fill="#4A453E">σ</text>
-      <text x="264" y="70" fontSize="10" fontFamily="var(--font-newsreader)" fontStyle="italic" fill="#14110E">ε</text>
-    </svg>
-  );
-}
-
-function AssayDrift() {
-  const points = [
-    [34, 34], [60, 40], [88, 48], [116, 55], [144, 62], [172, 71], [200, 79], [228, 86],
-  ] as const;
-
-  return (
-    <svg viewBox="0 0 280 120" className="h-full w-full" role="img" aria-label="Assay drift">
-      <line x1="20" y1="102" x2="260" y2="102" stroke="#D1D1D3" strokeWidth="0.75" />
-      <line x1="20" y1="20" x2="20" y2="102" stroke="#D1D1D3" strokeWidth="0.75" />
-      <line x1="26" y1="30" x2="250" y2="92" stroke="#0A07D4" strokeWidth="1.1" strokeDasharray="4 4" />
-      {points.map((point, idx) => (
-        <circle key={idx} cx={point[0]} cy={point[1]} r="3.2" fill="#4140FC" />
-      ))}
-      <line x1="84" y1="47" x2="84" y2="56" stroke="#14110E" strokeWidth="1.4" />
-      <line x1="196" y1="76" x2="196" y2="85" stroke="#14110E" strokeWidth="1.4" />
-      <text x="92" y="54" fontSize="9" fontFamily="var(--font-newsreader)" fontStyle="italic" fill="#14110E">Δε</text>
-      <text x="204" y="83" fontSize="9" fontFamily="var(--font-newsreader)" fontStyle="italic" fill="#14110E">Δε</text>
-    </svg>
-  );
-}
-
-function DesignMatrix() {
-  const cells = [
-    [0, 0], [1, 0], [3, 0],
-    [0, 1], [2, 1],
-    [1, 2], [3, 2],
-    [0, 3], [2, 3],
-  ] as const;
-
-  return (
-    <svg viewBox="0 0 280 120" className="h-full w-full" role="img" aria-label="Sparse design matrix">
-      <g transform="translate(56 18)">
-        {Array.from({ length: 4 }, (_, row) =>
-          Array.from({ length: 4 }, (_, col) => (
-            <rect
-              key={`${row}-${col}`}
-              x={col * 38}
-              y={row * 22}
-              width="26"
-              height="14"
-              fill={cells.some(([c, r]) => c === col && r === row) ? '#4140FC' : '#EFEFFF'}
-              fillOpacity={cells.some(([c, r]) => c === col && r === row) ? '0.86' : '1'}
-              stroke="#CDCDFE"
-              strokeWidth="1"
-            />
-          )),
-        )}
-      </g>
-      <path d="M220 30L242 30L242 92L220 92" fill="none" stroke="#8C8579" strokeWidth="1" strokeDasharray="3 3" />
-      <text x="248" y="64" fontSize="9" fontFamily="var(--font-jetbrains)" fill="#4A453E">NO PRIOR</text>
-    </svg>
+    <>
+      <span className="block text-[0.84em]" style={{ letterSpacing: '0.02em' }}>
+        Your fermentation process
+      </span>
+      <span className="text-[0.84em]" style={{ letterSpacing: '0.02em' }}>
+        isn&apos;t hitting the{' '}
+      </span>
+      <span
+        className="text-blue-700"
+        style={{ textShadow: '0 0 18px rgba(65,64,252,0.08)' }}
+      >
+        productivity target
+      </span>{' '}
+      <span className="text-[0.84em]" style={{ letterSpacing: '0.02em' }}>
+        that makes your molecule{' '}
+      </span>
+      <span
+        className="text-blue-700"
+        style={{ textShadow: '0 0 16px rgba(65,64,252,0.06)' }}
+      >
+        commercially viable
+      </span>
+      .
+    </>
   );
 }
