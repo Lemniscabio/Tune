@@ -90,31 +90,31 @@ const tuneContent: ProductPageContent = {
   engagementJourney: {
     number: '04',
     eyebrow: 'HOW TUNE WORKS',
-    headline: 'A learning loop that optimizes your bioprocess for pilot',
+    headline: 'Audit, model, optimize, deliver.',
     intro:
-      'Tune combines bioprocess engineering, process data, modelling, and experimental strategy to make each run more useful than the last.',
+      'Tune combines bioprocess engineering, process data, modelling, and experimental strategy into a structured program that takes your process from where it is to pilot‑ready.',
     trustLine:
       'Diagnose the process → Run the learning loops → Validate recommendations → Build the pilot-ready package',
     steps: [
       {
         index: '01',
-        title: 'Map the starting point.',
-        body: 'Tune reviews the strain, media, recipe, assays, prior runs if available, and the constraints that define the current process.',
+        title: 'Audit',
+        body: 'Tune reviews the strain, media, recipe, assays, prior data, and the constraints that define the current process.',
       },
       {
         index: '02',
-        title: 'Build the process model.',
-        body: 'Biology, process conditions, measurements, and operating logic are connected into a model that explains current performance.',
+        title: 'Model',
+        body: 'Tune builds the model specific to the biology, process conditions, measurements, and operating logic that explains current performance.',
       },
       {
         index: '03',
-        title: 'Run optimization cycles.',
-        body: 'Each cycle recommends the highest-value process changes, updates the model on data, and improves productivity and reproducibility.',
+        title: 'Optimize',
+        body: 'Each cycle recommends the highest-value process changes, refines the model with new data, and improves productivity and reproducibility.',
       },
       {
         index: '04',
-        title: 'Deliver the pilot-ready process.',
-        body: 'Tune delivers the operating window, expected performance, remaining risks, and evidence needed to move toward pilot.',
+        title: 'Deliver',
+        body: 'Tune delivers the operating window, expected performance, remaining risks, and evidence needed to commit to pilot.',
       },
     ],
     transitionLine: 'Each pass through the loop makes the next run more targeted and more legible.',
@@ -156,9 +156,9 @@ const tuneContent: ProductPageContent = {
   // Evidence In -> Hybrid Model -> Decisions Out.
   paidLoop: {
     number: '03',
-    headline: 'Tune builds the decision layer your process is missing.',
+    headline: 'Tune replaces guesswork with a systematic path to pilot.',
     intro:
-      'Tune builds the baseline, finds the process levers, and runs targeted optimization cycles so your bioprocess can meet pilot-scale requirements.',
+      'It establishes your baseline, finds the variables that move productivity, and uses every run to build the case for pilot-scale investment.',
     solutionBento: {
       featureTitle: 'Move from proven molecule to proven bioprocess.',
       featureBody: 'Tune delivers a productive, reproducible process ready for pilot-scale investment.',
@@ -239,9 +239,9 @@ const tuneContent: ProductPageContent = {
 
   deliverablesSection: {
     eyebrow: 'What Tune delivers',
-    headline: 'A pilot-ready process, not another analysis.',
+    headline: 'Tune delivers a pilot-ready process.',
     intro:
-      'Tune delivers the optimized process conditions, pilot run protocol, and model-backed expectations your team needs to execute the first pilot run with confidence.',
+      'Tune delivers optimized process conditions, a pilot run protocol, and model-backed expectations. Everything your team needs to execute the first pilot run with confidence.',
     note:
       'Tune does not replace your wet lab. It helps your wet lab learn faster, decide better, and arrive at a process that is ready to be tested at pilot scale.',
     packageLabel: 'Pilot-Ready Process Package',
@@ -410,7 +410,7 @@ const tuneContent: ProductPageContent = {
     body: [
       'The 10-day pilot is the entry point into Tune. We review your current bioprocess, identify the main uncertainty, and determine whether a longer Tune engagement can create a credible path to pilot readiness.',
       'If the process is the bottleneck,\nlet\'s talk.',
-      'Request a Tune fit conversation. If there is a strong fit, we begin with the 10-day technical pilot and define the longer optimization program from there.',
+      'Request a Tune fit conversation. If there is a strong fit, we begin with the 10-day technical pilot and scope the full optimization program from there.',
     ],
     steps: [
       'promising biology but a process that is not yet pilot-scale productive, reproducible, or ready for pilot-scale investment.',

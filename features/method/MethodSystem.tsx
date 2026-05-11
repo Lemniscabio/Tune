@@ -46,15 +46,11 @@ export function MethodSystem({ section, id = 'how-method' }: MethodSystemProps) 
 
         <div className="mt-20 md:mt-24">
           <div className="max-w-[860px]">
-            <p className="mono-s text-ink-ash" style={{ letterSpacing: '0.08em' }}>
-              LEARNING LOOPS
-            </p>
             <h3 className="mt-5 max-w-[16ch] text-[clamp(2rem,3.4vw,3rem)] font-medium leading-[1.04] tracking-[-0.03em] text-ink-black">
-              Two ways a fermentation program learns.
+              Run fewer but smarter experiments. 
             </h3>
             <p className="mt-5 max-w-[58ch] text-[16px] leading-[1.65] text-ink-graphite md:text-[18px]">
-              One loop burns wet-lab rounds to discover what happened. The other uses Tune
-              to learn between runs, then chooses the next experiment with intent.
+              Tune replaces slow wet-lab loops with an accelerated loop that samples 100× more of the design space, so your physical runs are the winners from thousands of virtual ones.
             </p>
           </div>
 
@@ -157,9 +153,6 @@ function SolutionFeatureCard({
       />
 
       <div className="relative z-10 flex h-full flex-col">
-        <p className="mono-s text-blue-100" style={{ letterSpacing: '0.08em' }}>
-          PREDICTIVE MODEL
-        </p>
         <h3 className="mt-5 max-w-[13ch] text-[clamp(2rem,4.2vw,3.15rem)] font-medium leading-[1.02] tracking-[-0.038em] text-white">
           {title}
         </h3>

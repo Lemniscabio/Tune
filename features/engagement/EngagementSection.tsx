@@ -1,6 +1,7 @@
 import type { EngagementJourney as EngagementJourneyContent } from '@/content/schema';
 import { CALENDLY_URL } from '@/content/shared.content';
 import { Eyebrow } from '@/design-system/primitives/Eyebrow';
+import { AccentUnderline } from '@/features/hero/AccentUnderline';
 
 type EngagementSectionProps = {
   section: EngagementJourneyContent;
@@ -25,7 +26,7 @@ export function EngagementSection({ section, id = 'engagement-journey' }: Engage
               <span className="border-b border-white/85 pb-0.5">pilot scale</span>?
             </h3>
             <p className="mt-3 text-[14px] leading-[1.55] tracking-[-0.01em] text-white/65 md:text-[15px]">
-              Use the data you already have before the next expensive batch becomes the teacher.
+              See what your current data says about your path to pilot.
             </p>
           </div>
           <a
@@ -44,7 +45,8 @@ export function EngagementSection({ section, id = 'engagement-journey' }: Engage
         </Eyebrow>
 
         <h2 className="mt-7 max-w-[18ch] text-[clamp(3rem,5.6vw,5.6rem)] font-medium leading-[1.08] tracking-[-0.062em] text-ink-black">
-          {section.headline}
+          Audit, model, optimize,{' '}
+          <AccentUnderline delayMs={0}><span>deliver</span></AccentUnderline>.
         </h2>
 
         <p className="mt-10 max-w-[58ch] text-[20px] leading-[1.65] tracking-[-0.02em] text-ink-graphite md:text-[22px]">

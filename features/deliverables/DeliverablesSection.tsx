@@ -31,11 +31,6 @@ export function DeliverablesSection({
               {section.intro}
             </p>
 
-            <div className="mt-8 max-w-[720px] rounded-[24px] border border-line-hairline-cool bg-[linear-gradient(180deg,rgba(244,246,252,0.86)_0%,rgba(255,255,255,0.98)_100%)] px-6 py-6 shadow-[0_22px_56px_-44px_rgba(20,17,14,0.16)]">
-              <p className="text-[16px] leading-[1.58] tracking-[-0.014em] text-[#50607D] md:text-[17px]">
-                {section.note}
-              </p>
-            </div>
           </div>
 
           <div className="rounded-[30px] border border-line-hairline-cool bg-white p-4 shadow-[0_24px_70px_-46px_rgba(20,17,14,0.2)] md:p-5">

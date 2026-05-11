@@ -96,7 +96,7 @@ function HorizontalFlow({
   }, [loopBackToIndex]);
 
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-hidden">
       <div className="inline-block min-w-full">
         <div ref={flowRef} className="flex items-center gap-1">
           {steps.map((step, i) => (
@@ -379,7 +379,7 @@ export function LoopComparisonViz() {
     <div className="grid gap-5 min-[1230px]:grid-cols-[0.79fr_1.35fr] min-[1230px]:gap-12">
       <LoopPanel
         variant="muted"
-        label="Traditional"
+        label="Without Tune"
         steps={[{ label: 'Run experiments' }, { label: 'Analyse data' }]}
         exitLabel="Pilot"
         stat="~10s"

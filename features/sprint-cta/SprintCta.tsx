@@ -51,7 +51,7 @@ export function SprintCta({ section, id = 'engagement-start' }: SprintCtaProps) 
 
           <div className="relative z-10 grid gap-10 lg:grid-cols-[1.08fr_0.92fr] lg:gap-12">
             <div>
-              <Eyebrow className="border-white/14 bg-white/6 text-blue-100 shadow-none backdrop-blur-[10px]">
+              <Eyebrow className="border-white/20 bg-white/8 text-black/90 shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_4px_16px_rgba(0,0,0,0.18)] backdrop-blur-xl">
                 Start with a 10-day Tune pilot
               </Eyebrow>
 
@@ -64,8 +64,8 @@ export function SprintCta({ section, id = 'engagement-start' }: SprintCtaProps) 
                   {section.body[0]}
                 </p>
                 <div className="mt-6 rounded-[16px] border border-white/10 bg-white/6 px-5 py-4">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-blue-300/60">Best fit</p>
-                  <p className="mt-2 text-[15px] leading-[1.58] tracking-[-0.012em] text-blue-200/80">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-white/60">Best fit</p>                
+                  <p className="mt-2 text-[15px] leading-[1.58] tracking-[-0.012em] text-white/80">
                     {section.steps[0]}
                   </p>
                 </div>
@@ -80,7 +80,7 @@ export function SprintCta({ section, id = 'engagement-start' }: SprintCtaProps) 
                 <p className="mt-6 text-[18px] leading-[1.65] tracking-[-0.014em] text-[#50607D] md:text-[19px]">
                   {section.body[2]}
                 </p>
-                <div className="mt-8">
+                <div className="mt-auto pt-12">
                   <a
                     href={CALENDLY_URL}
                     className="inline-flex items-center rounded-full bg-blue-600 px-6 py-3.5 text-[15px] font-medium tracking-[-0.015em] text-white shadow-[0_18px_42px_-26px_rgba(65,64,252,0.54)] transition-[background-color,box-shadow,transform] duration-150 ease-out hover:bg-blue-700 active:scale-[0.97]"
@@ -89,9 +89,6 @@ export function SprintCta({ section, id = 'engagement-start' }: SprintCtaProps) 
                     <span aria-hidden className="ml-3 text-[18px] leading-none">→</span>
                   </a>
                 </div>
-                <p className="mt-8 text-[13px] leading-[1.55] tracking-[-0.01em] text-[#8496B4] md:text-[14px]">
-                  We accept a limited number of Tune programs each quarter so the senior technical team can stay directly involved.
-                </p>
               </div>
             </div>
           </div>
