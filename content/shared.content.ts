@@ -12,7 +12,7 @@ export const shared = {
   },
   nav: {
     items: [
-      { label: 'Apply', href: CALENDLY_URL },
+      { label: 'Request a fit conversation', href: CALENDLY_URL, cta: true },
     ],
   },
   footer: {

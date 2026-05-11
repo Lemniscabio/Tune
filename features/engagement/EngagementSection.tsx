@@ -7,8 +7,6 @@ type EngagementSectionProps = {
 };
 
 export function EngagementSection({ section, id = 'engagement-journey' }: EngagementSectionProps) {
-  const journeyStops = section.trustLine.split('→').map((item) => item.trim());
-
   return (
     <section id={id} className="relative overflow-hidden bg-white">
       <div className="mx-auto max-w-[1280px] px-6 pt-24 pb-16 md:pt-32 md:pb-20">
@@ -16,31 +14,13 @@ export function EngagementSection({ section, id = 'engagement-journey' }: Engage
           {section.eyebrow}
         </Eyebrow>
 
-        <h2 className="mt-7 max-w-[18ch] text-[clamp(3rem,5.6vw,5.6rem)] font-medium leading-[0.94] tracking-[-0.062em] text-ink-black">
+        <h2 className="mt-7 max-w-[18ch] text-[clamp(3rem,5.6vw,5.6rem)] font-medium leading-[1.08] tracking-[-0.062em] text-ink-black">
           {section.headline}
         </h2>
 
         <p className="mt-10 max-w-[58ch] text-[20px] leading-[1.65] tracking-[-0.02em] text-ink-graphite md:text-[22px]">
           {section.intro}
         </p>
-
-        <div className="mt-14">
-          <p className="max-w-[72ch] text-[20px] font-medium leading-[1.4] tracking-[-0.025em] text-ink-black md:text-[26px]">
-            {journeyStops.map((item, index) => (
-              <span key={item} className="motion-settle" style={{ animationDelay: `${index * 70}ms` }}>
-                {item}
-                {index !== journeyStops.length - 1 ? (
-                  <span
-                    className="motion-settle px-2 text-blue-500"
-                    style={{ animationDelay: `${index * 70 + 40}ms` }}
-                  >
-                    →
-                  </span>
-                ) : null}
-              </span>
-            ))}
-          </p>
-        </div>
 
         <div className="mt-8 grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4 xl:gap-6">
           {section.steps.map((step) => (
@@ -58,12 +38,12 @@ function JourneyStepCard({
   step: EngagementJourneyContent['steps'][number];
 }) {
   return (
-    <article className="group rounded-[28px] border border-line-hairline-cool bg-white px-7 py-7 shadow-[0_18px_44px_-38px_rgba(20,17,14,0.18)] transition-[transform,box-shadow,border-color] duration-180 ease-out hover:-translate-y-0.5 hover:border-blue-100 hover:shadow-[0_24px_56px_-38px_rgba(65,64,252,0.16)] active:scale-[0.985] md:min-h-[260px] md:px-8 md:py-8">
+    <article className="group rounded-[28px] border border-line-hairline-cool bg-white px-7 py-7 shadow-[0_18px_44px_-38px_rgba(20,17,14,0.18)] transition-[transform,box-shadow,border-color] duration-180 ease-out hover:border-blue-100 hover:shadow-[0_24px_56px_-38px_rgba(65,64,252,0.16)] active:scale-[0.985] md:min-h-[260px] md:px-8 md:py-8">
       <div className="flex items-center justify-between gap-4">
-        <div className="inline-flex h-14 w-14 items-center justify-center rounded-[18px] bg-[linear-gradient(180deg,#1B2640_0%,#17233B_100%)] text-[12px] font-medium tracking-[0.12em] text-white shadow-[0_16px_30px_-22px_rgba(27,38,64,0.42)] transition-[transform,box-shadow] duration-180 ease-out group-hover:scale-[1.03] group-hover:shadow-[0_20px_36px_-22px_rgba(27,38,64,0.52)]">
+        <div className="inline-flex h-14 w-14 items-center justify-center rounded-[18px] bg-[linear-gradient(180deg,#1B2640_0%,#17233B_100%)] text-[12px] font-medium tracking-[0.12em] text-white shadow-[0_16px_30px_-22px_rgba(27,38,64,0.42)]">
           STEP
         </div>
-        <p className="mono-s text-blue-500 transition-transform duration-180 ease-out group-hover:-translate-y-0.5" style={{ letterSpacing: '0.08em' }}>
+        <p className="mono-s text-blue-500" style={{ letterSpacing: '0.08em' }}>
           {step.index}
         </p>
       </div>

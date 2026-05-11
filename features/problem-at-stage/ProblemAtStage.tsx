@@ -80,10 +80,10 @@ function ProblemBentoCard({
 
   const hoverClass =
     tone === 'anchor'
-      ? 'hover:-translate-y-0.5 hover:shadow-[0_34px_88px_-60px_rgba(3,2,122,0.36)] hover:border-blue-200 active:scale-[0.995]'
+      ? ' hover:shadow-[0_34px_88px_-60px_rgba(3,2,122,0.36)] hover:border-blue-200 active:scale-[0.995]'
       : tone === 'consequence'
-        ? 'hover:-translate-y-0.5 hover:shadow-[0_26px_72px_-54px_rgba(20,17,14,0.34)] hover:border-neutral-100 active:scale-[0.995]'
-        : 'hover:-translate-y-0.5 hover:shadow-[0_26px_72px_-54px_rgba(20,17,14,0.28)] hover:border-neutral-100 active:scale-[0.995]';
+        ? ' hover:shadow-[0_26px_72px_-54px_rgba(20,17,14,0.34)] hover:border-neutral-100 active:scale-[0.995]'
+        : ' hover:shadow-[0_26px_72px_-54px_rgba(20,17,14,0.28)] hover:border-neutral-100 active:scale-[0.995]';
 
   return (
     <article
@@ -93,6 +93,8 @@ function ProblemBentoCard({
         {tone === 'anchor' ? <AnchorTitle title={title} /> : title}
       </h3>
       {body ? <p className={`mt-4 ${bodyClass}`}>{body}</p> : null}
+
+      {tone === 'anchor' ? <AnchorIcon /> : null}
 
       {punchline ? (
         <p
@@ -107,30 +109,69 @@ function ProblemBentoCard({
 }
 
 function AnchorTitle({ title }: { title: string }) {
+  return <>{title}</>;
+}
+
+function AnchorIcon() {
   return (
-    <>
-      <span className="block text-[0.84em]" style={{ letterSpacing: '0.02em' }}>
-        Your fermentation process
-      </span>
-      <span className="text-[0.84em]" style={{ letterSpacing: '0.02em' }}>
-        isn&apos;t hitting the{' '}
-      </span>
-      <span
-        className="text-blue-700 transition-[text-shadow,color] duration-200 ease-out group-hover:text-blue-500"
-        style={{ textShadow: '0 0 18px rgba(65,64,252,0.08)' }}
-      >
-        productivity target
-      </span>{' '}
-      <span className="text-[0.84em]" style={{ letterSpacing: '0.02em' }}>
-        that makes your molecule{' '}
-      </span>
-      <span
-        className="text-blue-700 transition-[text-shadow,color] duration-200 ease-out group-hover:text-blue-500"
-        style={{ textShadow: '0 0 16px rgba(65,64,252,0.06)' }}
-      >
-        commercially viable
-      </span>
-      .
-    </>
+    <div className="mt-auto flex items-end justify-center gap-6 pt-8">
+      {/* Molecule — biology proven */}
+      <div className="flex flex-col items-center gap-2">
+        <div className="relative">
+          <svg viewBox="0 0 56 56" className="h-32 w-32" aria-hidden>
+            {/* Hexagon */}
+            <polygon
+              points="28,4 50,16 50,40 28,52 6,40 6,16"
+              fill="none"
+              stroke="rgba(65,64,252,0.22)"
+              strokeWidth="1.5"
+            />
+            {/* Bonds radiating from center */}
+            <line x1="28" y1="28" x2="28" y2="4"  stroke="rgba(65,64,252,0.15)" strokeWidth="1.2" />
+            <line x1="28" y1="28" x2="50" y2="16" stroke="rgba(65,64,252,0.15)" strokeWidth="1.2" />
+            <line x1="28" y1="28" x2="50" y2="40" stroke="rgba(65,64,252,0.15)" strokeWidth="1.2" />
+            <line x1="28" y1="28" x2="28" y2="52" stroke="rgba(65,64,252,0.15)" strokeWidth="1.2" />
+            <line x1="28" y1="28" x2="6"  y2="40" stroke="rgba(65,64,252,0.15)" strokeWidth="1.2" />
+            <line x1="28" y1="28" x2="6"  y2="16" stroke="rgba(65,64,252,0.15)" strokeWidth="1.2" />
+            {/* Center node */}
+            <circle cx="28" cy="28" r="5" fill="rgba(65,64,252,0.12)" stroke="rgba(65,64,252,0.4)" strokeWidth="1.4" />
+            {/* Vertex nodes */}
+            {[[28,4],[50,16],[50,40],[28,52],[6,40],[6,16]].map(([cx,cy], i) => (
+              <circle key={i} cx={cx} cy={cy} r="2.8" fill="white" stroke="rgba(65,64,252,0.3)" strokeWidth="1.2" />
+            ))}
+            {/* Checkmark */}
+            <circle cx="42" cy="42" r="8" fill="#4140FC" />
+            <path d="M38.5 42 L41 44.5 L45.5 39.5" stroke="white" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+          </svg>
+        </div>
+        <p className="text-[11px] font-medium tracking-[0.06em] text-blue-600/70 uppercase">Biology</p>
+      </div>
+
+      {/* Arrow */}
+      <div className="mb-17 text-[28px] text-ink-black/20">→</div>
+
+      {/* Fermenter — process not ready */}
+      <div className="flex flex-col items-center gap-2">
+        <div className="relative">
+          <svg viewBox="0 0 56 56" className="h-32 w-32" aria-hidden>
+            {/* Vessel body */}
+            <rect x="14" y="16" width="28" height="26" rx="4" fill="none" stroke="rgba(20,17,14,0.2)" strokeWidth="1.5" />
+            {/* Top cap */}
+            <rect x="18" y="11" width="20" height="6" rx="2" fill="none" stroke="rgba(20,17,14,0.2)" strokeWidth="1.4" />
+            {/* Bottom outlet */}
+            <path d="M24 42 L24 48 M32 42 L32 48" stroke="rgba(20,17,14,0.18)" strokeWidth="1.4" strokeLinecap="round" />
+            {/* Side port */}
+            <path d="M42 26 L48 26" stroke="rgba(20,17,14,0.18)" strokeWidth="1.4" strokeLinecap="round" />
+            {/* Liquid fill hint */}
+            <rect x="14" y="30" width="28" height="12" rx="0 0 4 4" fill="rgba(20,17,14,0.05)" />
+            {/* Warning badge */}
+            <circle cx="42" cy="42" r="8" fill="#F59E0B" />
+            <path d="M42 37.5 L42 43" stroke="white" strokeWidth="1.8" strokeLinecap="round" />
+            <circle cx="42" cy="45.5" r="1" fill="white" />
+          </svg>
+        </div>
+        <p className="text-[11px] font-medium tracking-[0.06em] text-ink-ash uppercase">Process</p>
+      </div>
+    </div>
   );
 }

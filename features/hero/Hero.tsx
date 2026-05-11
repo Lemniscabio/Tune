@@ -68,9 +68,15 @@ export function Hero({ hero, sectionToc }: HeroProps) {
                 style={{ animationDelay: '120ms' }}
               >
                 {hero.headlinePre}
-                <AccentUnderline delayMs={900}>
-                  <span className="accent-italic text-white">{hero.headlineAccent}</span>
+                <AccentUnderline delayMs={700}>
+                  {hero.headlineAccent}
                 </AccentUnderline>
+                <span className="whitespace-nowrap">
+                  {hero.headlineMid ?? ''}
+                  {hero.headlineAccent2 ? (
+                    <span className="accent-italic text-white">{hero.headlineAccent2}</span>
+                  ) : null}
+                </span>
                 {hero.headlinePost}
               </h1>
               <p
@@ -95,7 +101,7 @@ export function Hero({ hero, sectionToc }: HeroProps) {
             </div>
 
             {/* Right: cols 8–12 — auto-looping OPTDOE technical loop */}
-            <div className="flex items-center justify-center md:col-span-5 md:justify-center">
+            <div className="flex items-center justify-center md:col-span-5 md:justify-center md:ml-8 md:-mt-8">
               <ConcentricLoop />
             </div>
           </div>

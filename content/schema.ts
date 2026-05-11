@@ -13,6 +13,8 @@ export const heroSchema = z.object({
   eyebrow: z.string(),
   headlinePre: z.string(),
   headlineAccent: z.string(),
+  headlineMid: z.string().optional(),
+  headlineAccent2: z.string().optional(),
   headlinePost: z.string(),
   sub: z.string(),
   primaryCta: ctaSchema,
@@ -200,6 +202,7 @@ export const paidLoopSchema = z.object({
   intro: z.string(),
   solutionBento: z.object({
     featureTitle: z.string(),
+    featureBody: z.string().optional(),
     children: z.tuple([
       solutionBentoCardSchema,
       solutionBentoCardSchema,

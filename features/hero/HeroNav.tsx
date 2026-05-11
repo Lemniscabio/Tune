@@ -13,7 +13,7 @@ import { useEffect, useState } from 'react';
 type HeroNavProps = {
   brand: string;
   brandSuffix?: string;
-  items: ReadonlyArray<{ label: string; href: string }>;
+  items: ReadonlyArray<{ label: string; href: string; cta?: boolean }>;
 };
 
 export function HeroNav({ brand, brandSuffix, items }: HeroNavProps) {
@@ -82,12 +82,10 @@ function NavItem({
   item,
   scrolled,
 }: {
-  item: { label: string; href: string };
+  item: { label: string; href: string; cta?: boolean };
   scrolled: boolean;
 }) {
-  const isApply = item.label.trim().toLowerCase() === 'apply';
-
-  if (scrolled && isApply) {
+  if (item.cta && scrolled) {
     return (
       <Link
         href={item.href}

@@ -32,12 +32,14 @@ const tuneContent: ProductPageContent = {
   // §01 — Hero. Pure value-prop framing: bridge the 0→pilot gap.
   hero: {
     eyebrow: '',
-    headlinePre: 'Move from promising biology to a ',
-    headlineAccent: 'pilot-ready',
-    headlinePost: ' fermentation process.',
-    sub: 'Lemnisca’s Tune accelerates early-stage fermentation, moving teams from shake flask to pilot scale 2x faster. It handles the technical heavy lifting, transforming data into precise process decisions. Stop wasting runs on blind optimization and start scaling with absolute confidence."',
+    headlinePre: 'Move promising molecules from shake ',
+    headlineAccent: 'flask to pilot',
+    headlineMid: ' fermenters ',
+    headlineAccent2: '5x faster',
+    headlinePost: '',
+    sub: 'Lemnisca\'s Tune accelerates early-stage fermentation programs by turning data into decisions. Stop wasting runs on blind optimization. Let Tune guide your next experiment using what your data has already taught it, so you hit productivity targets faster.',
     primaryCta: {
-      label: 'Apply',
+      label: 'Request a Tune fit conversation',
       // TODO: swap to live Calendly URL when ready (see CALENDLY_URL in shared.content.ts).
       href: 'https://calendly.com/lemnisca',
       variant: 'primary',
@@ -54,33 +56,32 @@ const tuneContent: ProductPageContent = {
   problemSection: {
     number: '02',
     eyebrow: 'PROBLEM',
-    headline: 'The 0 → pilot gap',
-    lead: 'Most teams are not starting from zero. They have signal, runs, and data — but not a process system that can reliably move them to pilot.',
+    headline: 'Biology proven. Bioprocess still unproven.',
+    lead: 'Most programs don’t stall because the molecule has no potential. They stall because the process is not productive, reproducible, and ready for pilot-scale investment.',
     items: [
       {
         index: '01',
         label: 'ACUTE TRIGGER',
-        title:
-          "Your fermentation process isn't hitting the productivity target that makes your molecule commercially viable.",
+        title: 'The molecule works. The process is not ready.',
         body: '',
       },
       {
         index: '02',
-        label: 'DATA GAP',
-        title: "You can't fix what you can't diagnose.",
-        body: "You have fermentation data. It doesn't tell you why productivity has stalled, or where to start.",
+        label: 'PRODUCTIVITY',
+        title: 'Productivity misses the pilot threshold.',
+        body: 'The process is not producing enough, fast enough, to make the unit economics work.',
       },
       {
         index: '03',
-        label: 'MODEL GAP',
-        title: 'Trial and error takes years.',
-        body: "Every cycle of guess-and-check costs months. Competitors don't wait.",
+        label: 'REPRODUCIBILITY',
+        title: "Runs don't reproduce cleanly.",
+        body: 'Every batch still feels like a new experiment, so each cycle starts from scratch.',
       },
       {
         index: '04',
-        label: 'COST OF THE GAP',
-        title: 'Wet-lab runs are expensive.',
-        body: 'Without direction, most of your R&D budget goes to experiments that teach you nothing.',
+        label: 'CONFIDENCE',
+        title: 'Pilot investment needs confidence.',
+        body: 'Larger reactors and larger budgets need evidence that the process can deliver beyond the bench.',
         punchline: 'Budget goes in. Clarity does not come out.',
       },
     ],
@@ -88,8 +89,8 @@ const tuneContent: ProductPageContent = {
 
   engagementJourney: {
     number: '04',
-    eyebrow: 'CUSTOMER JOURNEY',
-    headline: 'A guided learning loop for fermentation process development.',
+    eyebrow: 'HOW TUNE WORKS',
+    headline: 'A learning loop that optimizes your bioprocess for pilot',
     intro:
       'Tune combines bioprocess engineering, process data, modelling, and experimental strategy to make each run more useful than the last.',
     trustLine:
@@ -97,23 +98,23 @@ const tuneContent: ProductPageContent = {
     steps: [
       {
         index: '01',
-        title: 'Diagnose the process',
-        body: 'Read the baseline, the assay noise, and the operating constraints before the team spends another round guessing.',
+        title: 'Map the starting point.',
+        body: 'Tune reviews the strain, media, recipe, assays, prior runs if available, and the constraints that define the current process.',
       },
       {
         index: '02',
-        title: 'Build the learning loop',
-        body: 'Combine biology, process logic, and run history into a model that keeps learning between wet-lab rounds.',
+        title: 'Build the process model.',
+        body: 'Biology, process conditions, measurements, and operating logic are connected into a model that explains current performance.',
       },
       {
         index: '03',
-        title: 'Choose the next experiments',
-        body: 'Rank the next conditions by expected yield, uncertainty reduction, and pilot relevance before the next run starts.',
+        title: 'Run optimization cycles.',
+        body: 'Each cycle recommends the highest-value process changes, updates the model on data, and improves productivity and reproducibility.',
       },
       {
         index: '04',
-        title: 'Build the pilot-ready package',
-        body: 'Turn repeated learning into a process package your team can defend, transfer, and carry into scale-up.',
+        title: 'Deliver the pilot-ready process.',
+        body: 'Tune delivers the operating window, expected performance, remaining risks, and evidence needed to move toward pilot.',
       },
     ],
     transitionLine: 'Each pass through the loop makes the next run more targeted and more legible.',
@@ -157,25 +158,22 @@ const tuneContent: ProductPageContent = {
     number: '03',
     headline: 'Tune builds the decision layer your process is missing.',
     intro:
-      'Your team may already have runs, assays, recipes, deviations, and promising biology. Tune connects those signals into a hybrid model that can rank variables, expose uncertainty, and derive the next experiment.',
+      'Tune builds the baseline, finds the process levers, and runs targeted optimization cycles so your bioprocess can meet pilot-scale requirements.',
     solutionBento: {
-      featureTitle:
-        'Tune is a predictive model of your fermentation process. It changes how you find a commercial recipe.',
+      featureTitle: 'Move from proven molecule to proven bioprocess.',
+      featureBody: 'Tune delivers a productive, reproducible process ready for pilot-scale investment.',
       children: [
         {
-          title: 'Every wet-lab run earns its keep.',
-          body:
-            'Tune picks the experiments most likely to increase productivity. No exploratory runs. No wasted batches.',
+          title: 'Establish the baseline.',
+          body: 'Tune first determines what your process reliably does today: productivity, variability, assay confidence, and run-to-run repeatability.',
         },
         {
-          title: "Tune tells you what's wrong.",
-          body:
-            'Its predictive model finds the bottleneck in your process, so you stop guessing and start fixing.',
+          title: 'Find the process levers.',
+          body: 'Tune identifies which variables are actually moving titre, yield, productivity, and reproducibility.',
         },
         {
-          title: 'Months, not years.',
-          body:
-            'Tune explores 100x more conditions between wet-lab rounds than your team could. Years of search compress into months.',
+          title: 'Turn R&D runs into process evidence.',
+          body: 'Each experiment is designed to reduce a specific uncertainty and move the process closer to pilot-scale acceptance.',
         },
       ],
     },
@@ -241,31 +239,31 @@ const tuneContent: ProductPageContent = {
 
   deliverablesSection: {
     eyebrow: 'What Tune delivers',
-    headline: 'A process package ready for the first pilot run.',
+    headline: 'A pilot-ready process, not another analysis.',
     intro:
-      'The end outcome of Tune is not more analysis. It is a practical, technically grounded package that helps your team execute the first pilot run with confidence.',
+      'Tune delivers the optimized process conditions, pilot run protocol, and model-backed expectations your team needs to execute the first pilot run with confidence.',
     note:
       'Tune does not replace your wet lab. It helps your wet lab learn faster, decide better, and arrive at a process that is ready to be tested at pilot scale.',
     packageLabel: 'Pilot-Ready Process Package',
     cards: [
       {
-        title: 'Process recipe and operating window',
+        title: 'Optimized process window.',
         body:
-          'A defined bench-scale process recipe with critical ranges, control logic, and process window.',
+          'The recommended process conditions, critical ranges, control logic, and expected bench-scale performance.',
         hoverNote:
           'Helps the team know what to run and where the process has room to operate.',
       },
       {
-        title: 'Pilot run protocol',
+        title: 'First pilot run protocol.',
         body:
-          'A practical execution plan for the first pilot run: what to run, measure, watch, and decide.',
+          'A practical plan for what to run, what to measure, what to watch, and how to decide during the pilot.',
         hoverNote:
           'Turns bench learning into a practical first pilot execution plan.',
       },
       {
-        title: 'Model-backed expectations and risks',
+        title: 'Expected performance and risk signals.',
         body:
-          'Expected pilot performance ranges, key uncertainties, early warning signals, and success criteria.',
+          'Model-backed ranges, key uncertainties, early warning signals, and success criteria for the pilot run.',
         hoverNote:
           'Sets expected ranges, warning signs, and success criteria before the batch begins.',
       },
@@ -408,17 +406,17 @@ const tuneContent: ProductPageContent = {
   // §04 — Engagement · Start.
   sprintCta: {
     number: '04',
-    headline: 'Start with a focused free 10-day technical pilot.',
+    headline: 'Find out if Tune can move your process toward pilot.',
     body: [
-      'The first step into Tune is a 10-day technical pilot. We review your current program, available run data, and scale-up context to determine whether a longer Tune engagement can create a meaningful path toward a pilot-ready process.',
-      'If your biology works but your process is not yet pilot-ready, Tune may be the next step.',
-      'Request a Tune fit conversation. If the program is a strong fit, we begin with a 10-day technical pilot and then define the longer engagement required to build the process package for your first pilot run.',
+      'The 10-day pilot is the entry point into Tune. We review your current bioprocess, identify the main uncertainty, and determine whether a longer Tune engagement can create a credible path to pilot readiness.',
+      'If the process is the bottleneck,\nlet\'s talk.',
+      'Request a Tune fit conversation. If there is a strong fit, we begin with the 10-day technical pilot and define the longer optimization program from there.',
     ],
     steps: [
+      'promising biology but a process that is not yet pilot-scale productive, reproducible, or ready for pilot-scale investment.',
       'Understand the program',
       'Review the data',
       'Identify the uncertainty',
-      'Recommend the next move',
     ],
     formLabels: {
       name: 'Name',

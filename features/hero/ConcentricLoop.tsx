@@ -312,9 +312,9 @@ function StepNode({
       />
       <text
         x={node.x}
-        y={node.y + 3.5}
+        y={node.y + 4}
         textAnchor="middle"
-        className="select-none font-mono text-[9px] font-medium tabular-nums"
+        className="select-none font-mono text-[12px] font-medium tabular-nums"
         fill={active ? '#14110E' : '#CDCDFE'}
       >
         {step.number}
@@ -323,7 +323,7 @@ function StepNode({
         x={label.x}
         y={label.y + labelNudgeY}
         textAnchor={anchor}
-        className="select-none font-mono text-[9px] tabular-nums"
+        className="select-none font-mono text-[13px] tabular-nums"
         fill={active ? '#FBFC40' : '#CDCDFE'}
         initial={false}
         animate={{ opacity: active ? 1 : 0.7 }}

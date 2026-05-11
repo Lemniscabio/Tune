@@ -59,55 +59,37 @@ export function SprintCta({ section, id = 'engagement-start' }: SprintCtaProps) 
                 {section.headline}
               </h2>
 
-              <div className="mt-7 max-w-[42rem] space-y-4">
-                <p className="text-[18px] leading-[1.62] tracking-[-0.018em] text-blue-50 md:text-[20px]">
+              <div className="mt-7 max-w-[38rem]">
+                <p className="text-[17px] leading-[1.65] tracking-[-0.015em] text-blue-100 md:text-[18px]">
                   {section.body[0]}
                 </p>
-                <p className="text-[18px] leading-[1.56] tracking-[-0.018em] text-white md:text-[20px]">
-                  {section.body[1]}
-                </p>
+                <div className="mt-6 rounded-[16px] border border-white/10 bg-white/6 px-5 py-4">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-blue-300/60">Best fit</p>
+                  <p className="mt-2 text-[15px] leading-[1.58] tracking-[-0.012em] text-blue-200/80">
+                    {section.steps[0]}
+                  </p>
+                </div>
               </div>
             </div>
 
-            <div className="relative rounded-[28px] border border-white/10 bg-[rgba(17,25,59,0.4)] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] md:p-5">
-              <div
-                aria-hidden
-                className="pointer-events-none absolute left-[-20px] top-10 hidden h-[calc(100%-80px)] w-px bg-[linear-gradient(180deg,rgba(205,205,254,0)_0%,rgba(205,205,254,0.3)_18%,rgba(205,205,254,0.55)_50%,rgba(205,205,254,0.3)_82%,rgba(205,205,254,0)_100%)] lg:block"
-              />
-              <div className="space-y-3">
-                {section.steps.map((step, index) => (
-                  <div
-                    key={step}
-                    className="group flex items-center gap-4 rounded-[18px] border border-white/7 bg-[rgba(74,84,122,0.34)] px-4 py-4 transition-[background-color,border-color,transform,box-shadow] duration-150 ease-out hover:-translate-y-0.5 hover:border-white/14 hover:bg-[rgba(83,94,138,0.42)] hover:shadow-[0_18px_36px_-28px_rgba(0,0,0,0.38)] md:px-5"
-                  >
-                    <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[linear-gradient(180deg,#FF6A1A_0%,#FF5A0A_100%)] text-[14px] font-semibold text-white shadow-[0_10px_24px_-16px_rgba(255,106,26,0.8)] transition-[transform,filter] duration-150 ease-out group-hover:scale-[1.05] group-hover:brightness-110">
-                      {index + 1}
-                    </span>
-                    <p className="text-[17px] font-medium leading-[1.35] tracking-[-0.015em] text-white md:text-[18px]">
-                      {step}
-                    </p>
-                  </div>
-                ))}
-              </div>
-              <div className="mt-5 rounded-[30px] border border-[rgba(205,205,254,0.42)] bg-[linear-gradient(180deg,rgba(244,246,255,0.98)_0%,rgba(255,255,255,0.98)_100%)] px-6 py-7 shadow-[0_24px_58px_-42px_rgba(2,6,22,0.42)] md:px-7 md:py-8">
-                <h3 className="max-w-[18ch] text-[clamp(1.45rem,1.7vw,2rem)] font-medium leading-[1.08] tracking-[-0.038em] text-[#060B23]">
+            <div className="flex items-stretch">
+              <div className="flex w-full flex-col rounded-[28px] border border-[rgba(205,205,254,0.38)] bg-[linear-gradient(180deg,rgba(244,246,255,0.98)_0%,rgba(255,255,255,1)_100%)] px-8 py-10 shadow-[0_28px_64px_-40px_rgba(2,6,22,0.48)] md:px-10 md:py-12">
+                <h3 className="whitespace-pre-line text-[clamp(3.2rem,3vw,3.2rem)] font-medium leading-[1.04] tracking-[-0.045em] text-[#060B23]">
                   {section.body[1]}
                 </h3>
-                <p className="mt-4 max-w-[40ch] text-[13px] leading-[1.56] tracking-[-0.012em] text-[#50607D] md:text-[14px]">
+                <p className="mt-6 text-[18px] leading-[1.65] tracking-[-0.014em] text-[#50607D] md:text-[19px]">
                   {section.body[2]}
                 </p>
-
-                <div className="mt-6">
+                <div className="mt-8">
                   <a
                     href={CALENDLY_URL}
-                    className="inline-flex items-center rounded-full bg-blue-500 px-5 py-3 text-[14px] font-medium tracking-[-0.015em] text-white shadow-[0_18px_42px_-26px_rgba(65,64,252,0.54)] transition-[background-color,box-shadow,transform] duration-150 ease-out hover:bg-blue-700 active:scale-[0.97]"
+                    className="inline-flex items-center rounded-full bg-blue-600 px-6 py-3.5 text-[15px] font-medium tracking-[-0.015em] text-white shadow-[0_18px_42px_-26px_rgba(65,64,252,0.54)] transition-[background-color,box-shadow,transform] duration-150 ease-out hover:bg-blue-700 active:scale-[0.97]"
                   >
                     Request a Tune fit conversation
-                    <span aria-hidden className="ml-3 text-[20px] leading-none">→</span>
+                    <span aria-hidden className="ml-3 text-[18px] leading-none">→</span>
                   </a>
                 </div>
-
-                <p className="mt-6 max-w-[42ch] text-[12px] leading-[1.5] tracking-[-0.01em] text-[#607295] md:text-[13px]">
+                <p className="mt-8 text-[13px] leading-[1.55] tracking-[-0.01em] text-[#8496B4] md:text-[14px]">
                   We accept a limited number of Tune programs each quarter so the senior technical team can stay directly involved.
                 </p>
               </div>
