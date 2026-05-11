@@ -1,6 +1,6 @@
 'use client';
 
-import { AnimatePresence, motion } from 'motion/react';
+import { motion } from 'motion/react';
 import { useRef, useState } from 'react';
 import { useInView } from 'motion/react';
 import { shared } from '@/content/shared.content';
@@ -80,40 +80,50 @@ export function FaqFooterSection({ id = 'engagement-faq' }: { id?: string }) {
               const isOpen = openIndex === index;
 
               return (
-                <div key={item.question} className="border-b border-white/14">
+                <div key={item.question} className="border-b border-white/14" style={{ contain: 'layout style' }}>
                   <button
                     type="button"
                     onClick={() => setOpenIndex((current) => (current === index ? null : index))}
-                    className="group flex w-full cursor-pointer items-start justify-between gap-6 rounded-[18px] py-6 text-left transition-colors duration-150 ease-out hover:text-white"
+                    className="group flex w-full cursor-pointer items-start justify-between gap-6 rounded-[18px] py-6 text-left"
                     aria-expanded={isOpen}
                   >
                     <span className={`max-w-[28ch] text-[22px] font-medium leading-[1.18] tracking-[-0.018em] transition-colors duration-150 ease-out ${isOpen ? 'text-white' : 'text-white/92 group-hover:text-white'}`}>
                       {item.question}
                     </span>
-                    <motion.span
-                      className="mt-1 text-[24px] leading-none text-blue-100"
-                      animate={{ rotate: isOpen ? 45 : 0, x: isOpen ? 0 : 2 }}
-                      transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+                    <span
+                      className="mt-1 flex-shrink-0 text-[24px] leading-none text-blue-100"
+                      style={{
+                        transform: isOpen ? 'rotate(45deg)' : 'rotate(0deg)',
+                        transition: 'transform 220ms cubic-bezier(0.16, 1, 0.3, 1)',
+                        willChange: 'transform',
+                        display: 'inline-block',
+                      }}
                     >
                       +
-                    </motion.span>
+                    </span>
                   </button>
 
-                  <AnimatePresence initial={false}>
-                    {isOpen ? (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0, y: -6 }}
-                        animate={{ height: 'auto', opacity: 1, y: 0 }}
-                        exit={{ height: 0, opacity: 0, y: -4 }}
-                        transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-                        className="origin-top overflow-hidden"
+                  <div
+                    style={{
+                      display: 'grid',
+                      gridTemplateRows: isOpen ? '1fr' : '0fr',
+                      transition: 'grid-template-rows 260ms cubic-bezier(0.16, 1, 0.3, 1)',
+                    }}
+                  >
+                    <div style={{ overflow: 'hidden', minHeight: 0 }}>
+                      <p
+                        className="body-m mt-4 mb-6 w-full text-white"
+                        style={{
+                          opacity: isOpen ? 1 : 0,
+                          transform: isOpen ? 'translateY(0)' : 'translateY(-4px)',
+                          transition: 'opacity 200ms ease-out, transform 200ms ease-out',
+                          willChange: 'opacity, transform',
+                        }}
                       >
-                        <p className="body-m mt-4 mb-6 w-full text-white">
-                          {item.answer}
-                        </p>
-                      </motion.div>
-                    ) : null}
-                  </AnimatePresence>
+                        {item.answer}
+                      </p>
+                    </div>
+                  </div>
                 </div>
               );
             })}
