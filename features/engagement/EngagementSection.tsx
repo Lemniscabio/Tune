@@ -1,4 +1,5 @@
 import type { EngagementJourney as EngagementJourneyContent } from '@/content/schema';
+import { CALENDLY_URL } from '@/content/shared.content';
 import { Eyebrow } from '@/design-system/primitives/Eyebrow';
 
 type EngagementSectionProps = {
@@ -9,6 +10,34 @@ type EngagementSectionProps = {
 export function EngagementSection({ section, id = 'engagement-journey' }: EngagementSectionProps) {
   return (
     <section id={id} className="relative overflow-hidden bg-white">
+      {/* Transitional gradient strip */}
+      <div
+        className="px-6 py-10 md:px-8 md:py-12"
+        style={{
+          background:
+            'linear-gradient(90deg, #050D34 0%, #03027A 35%, #091C84 60%, #1612B8 82%, #4140FC 100%)',
+        }}
+      >
+        <div className="mx-auto flex max-w-[1280px] flex-col items-start gap-6 md:flex-row md:items-center md:justify-between md:gap-10">
+          <div className="max-w-[58ch]">
+            <h3 className="text-[28px] font-medium leading-[1.15] tracking-[-0.028em] text-white md:text-[36px]">
+              Preparing for{' '}
+              <span className="border-b border-white/85 pb-0.5">pilot scale</span>?
+            </h3>
+            <p className="mt-3 text-[14px] leading-[1.55] tracking-[-0.01em] text-white/65 md:text-[15px]">
+              Use the data you already have before the next expensive batch becomes the teacher.
+            </p>
+          </div>
+          <a
+            href={CALENDLY_URL}
+            className="inline-flex flex-shrink-0 items-center gap-2 rounded-full bg-[#050D34] px-5 py-3 text-[14px] font-medium text-white transition-[background-color,transform] duration-150 ease-out hover:bg-[#0B1A4D] active:scale-[0.97] md:text-[15px]"
+          >
+            Request a Tune fit conversation
+            <span aria-hidden className="text-[16px] leading-none">→</span>
+          </a>
+        </div>
+      </div>
+
       <div className="mx-auto max-w-[1280px] px-6 pt-24 pb-16 md:pt-32 md:pb-20">
         <Eyebrow className="border-blue-100 bg-[rgba(244,245,255,0.92)] text-blue-500 shadow-none backdrop-blur-0">
           {section.eyebrow}
