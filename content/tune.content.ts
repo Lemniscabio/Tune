@@ -406,11 +406,10 @@ const tuneContent: ProductPageContent = {
   // §04 — Engagement · Start.
   sprintCta: {
     number: '04',
-    headline: 'Find out if Tune can move your process toward pilot.',
+    headline: 'If your process is the bottleneck, let\'s talk.',
     body: [
-      'The Free 10-day pilot is the entry point into Tune. We review your current bioprocess, identify the main uncertainty, and determine whether a longer Tune engagement can create a credible path to pilot readiness.',
-      'If the process is the bottleneck,\nlet\'s talk.',
-      'Request a Tune fit conversation. If there is a strong fit, we begin with the Free 10-day technical pilot and scope the full optimization program from there.',
+      'We\'re running a limited number of free 10-day sprints for teams between early data and pilot readiness.',
+      'Our team reviews your current data, identifies what\'s blocking pilot readiness, and maps the exact next steps needed to get there.',
     ],
     steps: [
       'promising biology but a process that is not yet pilot-scale productive, reproducible, or ready for pilot-scale investment.',

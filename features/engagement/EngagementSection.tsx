@@ -63,7 +63,7 @@ export function EngagementSection({ section, id = 'engagement-journey' }: Engage
           {section.eyebrow}
         </Eyebrow>
 
-        <h2 className="mt-7 max-w-[18ch] text-[clamp(3rem,5.6vw,5.6rem)] font-medium leading-[1.08] tracking-[-0.062em] text-ink-black">
+        <h2 className="display-section mt-7 max-w-[18ch] text-ink-black">
           Audit, model, optimize,{' '}
           <AccentUnderline delayMs={0}><span>deliver</span></AccentUnderline>.
         </h2>

@@ -18,7 +18,7 @@ export function DeliverablesSection({
             <Eyebrow className="border-blue-100 bg-[rgba(244,245,255,0.92)] text-blue-500 shadow-none backdrop-blur-0">
               {section.eyebrow}
             </Eyebrow>
-            <h2 className="mt-7 max-w-[12ch] text-[clamp(2.5rem,4.4vw,4.55rem)] font-medium leading-[0.96] tracking-[-0.058em] text-ink-black">
+            <h2 className="display-section mt-7 max-w-[12ch] text-ink-black">
               {section.headline}
             </h2>
             <p className="mt-7 max-w-[25ch] text-[18px] leading-[1.6] tracking-[-0.018em] text-[#50607D] md:text-[19px]">

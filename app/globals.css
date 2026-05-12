@@ -99,11 +99,11 @@
 }
 
 .display-section {
-  font-size: clamp(2rem, 4vw, 3rem);
-  line-height: 1.1;
-  letter-spacing: -0.022em;
-  font-weight: 520;
-  font-variation-settings: "wght" 520;
+  font-size: clamp(2.5rem, 4.4vw, 4.55rem);
+  line-height: 0.96;
+  letter-spacing: -0.058em;
+  font-weight: 500;
+  font-variation-settings: "wght" 500;
 }
 
 .display-sub {

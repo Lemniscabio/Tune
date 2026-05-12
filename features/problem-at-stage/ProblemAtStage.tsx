@@ -66,7 +66,7 @@ function ProblemBentoCard({
 
   const titleClass =
     tone === 'anchor'
-      ? 'max-w-[10ch] text-[clamp(2.4rem,5vw,3.75rem)] leading-[0.98] tracking-[-0.045em]'
+      ? 'max-w-[13ch] text-[clamp(2rem,4.2vw,3.15rem)] leading-[1.02] tracking-[-0.038em]'
       : tone === 'consequence'
         ? 'max-w-[26ch] text-[clamp(1.7rem,2.4vw,2.35rem)] leading-[1.02] tracking-[-0.032em]'
         : 'max-w-[14ch] text-[clamp(1.55rem,2vw,2rem)] leading-[1.06] tracking-[-0.026em]';
@@ -95,7 +95,7 @@ function ProblemBentoCard({
       {body ? <p className={`mt-4 ${bodyClass}`}>{body}</p> : null}
 
       {tone === 'anchor' ? (
-        <p className="mt-auto pt-8 max-w-[28ch] text-[20px] leading-[1.58] text-ink-graphite/70">
+        <p className="mt-8 max-w-[28ch] text-[20px] leading-[1.58] text-ink-graphite/70">
           A great molecule earns no revenue until the process can deliver it at scale.
         </p>
       ) : null}
