@@ -11,7 +11,7 @@ export const shared = {
   },
   nav: {
     items: [
-      { label: 'Request a fit conversation', href: CALENDLY_URL, cta: true },
+      { label: 'Request a conversation', href: CALENDLY_URL, cta: true },
     ],
   },
   footer: {
