@@ -1,3 +1,6 @@
+'use client';
+
+import { motion } from 'motion/react';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 
@@ -25,17 +28,30 @@ export function Button({ href, variant = 'primary', accent = 'tune', children }:
   // New: yellow pill with blue-tinted shadow — used by the redesigned hero.
   if (variant === 'pill') {
     return (
-      <Link
+      <motion.a
         href={href}
-        className="group inline-flex items-center gap-3 rounded-full bg-yellow-50 px-7 py-3.5 text-[15px] font-medium tracking-[-0.005em] text-ink-black transition-[background-color,transform] duration-200 ease-out hover:bg-[#F4F538] active:scale-[0.97]"
-        style={{
-          // Neutral, restrained shadow — CTA reads as isolated, not blended into the field.
-          boxShadow: '0 1px 0 rgba(0,0,0,0.10), 0 6px 16px -8px rgba(0,0,0,0.35)',
-        }}
+        initial="rest"
+        whileHover="hover"
+        whileTap="tap"
+        variants={{ tap: { scale: 0.97 } }}
+        transition={{ duration: 0.1, ease: [0.23, 1, 0.32, 1] }}
+        className="inline-flex overflow-hidden rounded-full bg-yellow-50 px-7 py-3.5 text-[15px] font-medium tracking-[-0.005em] text-ink-black [transition:background-color_180ms_cubic-bezier(0.23,1,0.32,1)] hover:bg-[#F4F538]"
+        style={{ boxShadow: '0 1px 0 rgba(0,0,0,0.10), 0 6px 16px -8px rgba(0,0,0,0.35)' }}
       >
-        <span>{children}</span>
-        <span aria-hidden>→</span>
-      </Link>
+        <motion.span
+          className="flex items-center gap-3"
+          variants={{ rest: { x: 9 }, hover: { x: 0 } }}
+          transition={{ duration: 0.22, ease: [0.23, 1, 0.32, 1] }}
+        >
+          <span>{children}</span>
+          <motion.span
+            aria-hidden
+            variants={{ rest: { x: 16, opacity: 0 }, hover: { x: 0, opacity: 1 } }}
+            transition={{ duration: 0.22, ease: [0.23, 1, 0.32, 1] }}
+            className="text-[18px] leading-none"
+          >→</motion.span>
+        </motion.span>
+      </motion.a>
     );
   }
 

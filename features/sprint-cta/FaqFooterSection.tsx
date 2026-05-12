@@ -10,7 +10,7 @@ const FAQS = [
   {
     question: 'Is Tune right for our stage?',
     answer:
-      "Tune is built for teams with promising early fermentation data but no mature, reproducible process yet. You've seen signal in flasks or early bioreactor runs, but can't reliably replicate the good ones or systematically avoid the bad ones. If you're asking \"what should we test next?\" or \"are we ready to optimize?\", Tune is a fit. If you already have a stable baseline and controlled DoE experience, you might want to explore our full learning loop iteration program, we can discuss the right entry point during the fit conversation.",
+      "Tune is built for teams with promising early fermentation data but no mature, reproducible process yet. You've seen signals in flasks or early bioreactor runs, but can't reliably replicate the good ones or systematically avoid the bad ones. If you're asking \"what should we test next?\" or \"are we ready to optimize?\", Tune is a fit. If you already have a stable baseline and controlled DoE experience, you might want to explore our full learning loop iteration program, we can discuss the right entry point during the fit conversation.",
   },
   {
     question: 'What data do we need for the sprint?',
@@ -18,14 +18,14 @@ const FAQS = [
       "Any format works. Send us what you have: Excel sheets, ELN exports, PDFs, Word docs, scanned notebook pages, CSV files etc. We'll pull out what we need: strain info, run conditions, measurements, recipes, assay notes. The sprint is format-agnostic. If you have it, we can work with it.",
   },
   {
-    question: 'How long does the sprint take, and what\'s the workflow?',
+    question: "How long does the sprint take, and what's the workflow?",
     answer:
       "7-10 days from data handoff to interactive report. You send us what you have (batch records, recipes, assay notes). We run a statistical, biological, and engineering review. You get back a verdict (ready / fix baseline first / improve assays / defer), a risk map showing where your process is fragile, data gaps prioritized, and the next experiments we'd recommend. One call at the end to walk through it.",
   },
   {
     question: "We can't share our data. IP concerns.",
     answer:
-      "Understood. We sign NDAs as standard. Data stays in secure, access-controlled storage. We never train models across clients or reuse your strain/process data. If you need on-prem analysis or have extra compliance requirements, we can discuss those before you send anything.",
+      "Understood. We sign NDAs as standard. Data stays secure, access-controlled storage. If you have extra compliance requirements, we can discuss those before you send anything.",
   },
   {
     question: 'What if the verdict is "no, you\'re not ready"?',
@@ -40,7 +40,7 @@ const FAQS = [
   {
     question: 'We can do this ourselves. Why bring in Lemnisca?',
     answer:
-      "You could, but your team is already running experiments and managing the program. The readiness sprint needs three disciplines working together: bioprocess engineering, statistical modeling, and experimental design, which is a rare combination to have sitting idle. We turn a 4-6 week analysis (competing with everything else on your plate) into a 7-day focused review. More importantly, we surface the gotchas before you're waist-deep in optimization: unstable baselines, assay precision issues, wrong variable prioritization. Early detection saves months. That's the value.",
+      "You could, but your team is already running experiments and managing the program. The readiness sprint needs three disciplines working together: bioprocess engineering, modeling, and experimental design, which is a rare combination to have sitting idle. We turn a 4-6 week analysis (competing with everything else on your plate) into a 7-day focused review. More importantly, we surface the gotchas before you're waist-deep in optimization: unstable baselines, assay precision issues, wrong variable prioritization. Early detection saves months. That's the value.",
   },
 ] as const;
 
@@ -87,7 +87,7 @@ export function FaqFooterSection({ id = 'engagement-faq' }: { id?: string }) {
                     className="group flex w-full cursor-pointer items-start justify-between gap-6 rounded-[18px] py-6 text-left"
                     aria-expanded={isOpen}
                   >
-                    <span className={`max-w-[28ch] text-[22px] font-medium leading-[1.18] tracking-[-0.018em] transition-colors duration-150 ease-out ${isOpen ? 'text-white' : 'text-white/92 group-hover:text-white'}`}>
+                    <span className={`min-w-0 flex-1 text-[22px] font-medium leading-[1.18] tracking-[-0.018em] transition-colors duration-150 ease-out ${isOpen ? 'text-white' : 'text-white/92 group-hover:text-white'}`}>
                       {item.question}
                     </span>
                     <span

@@ -17,7 +17,7 @@ const tuneContent: ProductPageContent = {
   meta: {
     title: 'Tune · fermentation readiness and optimization · Lemnisca',
     description:
-      'A 10-day sprint reads your strain, baseline, and assay drift, then returns a prioritized experiment plan, variance decomposition, and paid-fit verdict.',
+      'A Free 10-day sprint reads your strain, baseline, and assay drift, then returns a prioritized experiment plan, variance decomposition, and paid-fit verdict.',
     canonical: 'https://lemnisca.bio/',
   },
 
@@ -408,9 +408,9 @@ const tuneContent: ProductPageContent = {
     number: '04',
     headline: 'Find out if Tune can move your process toward pilot.',
     body: [
-      'The 10-day pilot is the entry point into Tune. We review your current bioprocess, identify the main uncertainty, and determine whether a longer Tune engagement can create a credible path to pilot readiness.',
+      'The Free 10-day pilot is the entry point into Tune. We review your current bioprocess, identify the main uncertainty, and determine whether a longer Tune engagement can create a credible path to pilot readiness.',
       'If the process is the bottleneck,\nlet\'s talk.',
-      'Request a Tune fit conversation. If there is a strong fit, we begin with the 10-day technical pilot and scope the full optimization program from there.',
+      'Request a Tune fit conversation. If there is a strong fit, we begin with the Free 10-day technical pilot and scope the full optimization program from there.',
     ],
     steps: [
       'promising biology but a process that is not yet pilot-scale productive, reproducible, or ready for pilot-scale investment.',

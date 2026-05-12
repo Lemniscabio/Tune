@@ -1,3 +1,6 @@
+'use client';
+
+import { motion } from 'motion/react';
 import { Button } from '@/design-system/primitives/Button';
 import { shared } from '@/content/shared.content';
 import type { Hero as HeroContent, SectionTocItem } from '@/content/schema';
@@ -114,23 +117,36 @@ export function Hero({ hero, sectionToc }: HeroProps) {
 // Local ghost link — light variant for use on dark hero ground.
 function GhostLight({ href, children }: { href: string; children: React.ReactNode }) {
   return (
-    <a
+    <motion.a
       href={href}
-      className="group inline-flex items-center gap-2 text-[15px] font-medium text-white/85 transition-[color,transform] duration-150 ease-out hover:text-white active:scale-[0.985]"
+      initial="rest"
+      whileHover="hover"
+      whileTap="tap"
+      variants={{ tap: { scale: 0.985 } }}
+      transition={{ duration: 0.1, ease: [0.23, 1, 0.32, 1] }}
+      className="inline-flex items-center text-[15px] font-medium text-white/85 hover:text-white"
     >
-      <span className="relative">
-        {children}
-        <span
-          aria-hidden
-          className="absolute -bottom-0.5 left-0 h-px w-0 bg-white/70 transition-[width] duration-200 ease-out group-hover:w-full group-hover:bg-white"
-        />
-      </span>
-      <span
-        aria-hidden
-        className="text-[18px] leading-none"
+      <motion.span
+        className="flex items-center gap-2"
+        variants={{ rest: { x: 9 }, hover: { x: 0 } }}
+        transition={{ duration: 0.22, ease: [0.23, 1, 0.32, 1] }}
       >
-        →
-      </span>
-    </a>
+        <span className="relative">
+          {children}
+          <span
+            aria-hidden
+            className="absolute -bottom-0.5 left-0 h-px w-0 bg-white/70 transition-[width] duration-200 ease-out group-hover:w-full"
+          />
+        </span>
+        <motion.span
+          aria-hidden
+          variants={{ rest: { x: 16, opacity: 0 }, hover: { x: 0, opacity: 1 } }}
+          transition={{ duration: 0.22, ease: [0.23, 1, 0.32, 1] }}
+          className="text-[18px] leading-none"
+        >
+          →
+        </motion.span>
+      </motion.span>
+    </motion.a>
   );
 }

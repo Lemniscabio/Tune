@@ -1,3 +1,6 @@
+'use client';
+
+import { motion } from 'motion/react';
 import type { EngagementJourney as EngagementJourneyContent } from '@/content/schema';
 import { CALENDLY_URL } from '@/content/shared.content';
 import { Eyebrow } from '@/design-system/primitives/Eyebrow';
@@ -29,13 +32,29 @@ export function EngagementSection({ section, id = 'engagement-journey' }: Engage
               See what your current data says about your path to pilot.
             </p>
           </div>
-          <a
+          <motion.a
             href={CALENDLY_URL}
-            className="inline-flex flex-shrink-0 items-center gap-2 rounded-full bg-[#050D34] px-5 py-3 text-[14px] font-medium text-white transition-[background-color,transform] duration-150 ease-out hover:bg-[#0B1A4D] active:scale-[0.97] md:text-[15px]"
+            initial="rest"
+            whileHover="hover"
+            whileTap="tap"
+            variants={{ tap: { scale: 0.97 } }}
+            transition={{ duration: 0.1, ease: [0.23, 1, 0.32, 1] }}
+            className="inline-flex flex-shrink-0 overflow-hidden rounded-full bg-[#050D34] px-5 py-3 text-[14px] font-medium text-white md:text-[15px] [transition:background-color_180ms_cubic-bezier(0.23,1,0.32,1)] hover:bg-[#0B1A4D]"
           >
-            Request a Tune fit conversation
-            <span aria-hidden className="text-[16px] leading-none">→</span>
-          </a>
+            <motion.span
+              className="flex items-center gap-2"
+              variants={{ rest: { x: 9 }, hover: { x: 0 } }}
+              transition={{ duration: 0.22, ease: [0.23, 1, 0.32, 1] }}
+            >
+              <span>Request a Tune fit conversation</span>
+              <motion.span
+                aria-hidden
+                variants={{ rest: { x: 16, opacity: 0 }, hover: { x: 0, opacity: 1 } }}
+                transition={{ duration: 0.22, ease: [0.23, 1, 0.32, 1] }}
+                className="text-[16px] leading-none"
+                >→</motion.span>
+            </motion.span>
+          </motion.a>
         </div>
       </div>
 

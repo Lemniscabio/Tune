@@ -1,0 +1,80 @@
+<h2>Hero graphic redesign — which layout?</h2>
+<p class="subtitle">4 steps: Audit · Model · Tune · Pilot-ready. Knob rotates between them. Two layout approaches:</p>
+
+<div class="cards">
+
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <svg viewBox="0 0 320 280" style="width:100%;height:200px;background:#0B1A4D;border-radius:8px">
+        <!-- outer ring -->
+        <circle cx="160" cy="130" r="110" fill="none" stroke="rgba(161,161,254,0.3)" stroke-width="1.5"/>
+        <!-- 4 step labels at N/E/S/W -->
+        <text x="160" y="18" text-anchor="middle" fill="#CDCDFE" font-size="11" font-family="monospace">Audit the process</text>
+        <text x="278" y="134" text-anchor="start" fill="#CDCDFE" font-size="11" font-family="monospace">Model the</text>
+        <text x="278" y="147" text-anchor="start" fill="#CDCDFE" font-size="11" font-family="monospace">process</text>
+        <text x="160" y="252" text-anchor="middle" fill="#CDCDFE" font-size="11" font-family="monospace">Tune the process</text>
+        <text x="40" y="134" text-anchor="end" fill="#FBFC40" font-size="11" font-family="monospace">Pilot-ready</text>
+        <text x="40" y="147" text-anchor="end" fill="#FBFC40" font-size="11" font-family="monospace">process</text>
+        <!-- nodes at N/E/S/W -->
+        <circle cx="160" cy="26" r="9" fill="#03027A" stroke="#A1A1FE" stroke-width="1.2"/>
+        <circle cx="270" cy="130" r="9" fill="#03027A" stroke="#A1A1FE" stroke-width="1.2"/>
+        <circle cx="160" cy="234" r="9" fill="#03027A" stroke="#A1A1FE" stroke-width="1.2"/>
+        <circle cx="50" cy="130" r="9" fill="#FBFC40" stroke="#FBFC40" stroke-width="1.2"/>
+        <!-- active arc highlight -->
+        <path d="M 160 26 A 104 104 0 0 0 50 130" fill="none" stroke="#FBFC40" stroke-width="2.5" stroke-linecap="round"/>
+        <!-- center knob -->
+        <circle cx="160" cy="130" r="44" fill="#1B2943" stroke="rgba(205,205,254,0.4)" stroke-width="1.5"/>
+        <circle cx="160" cy="130" r="36" fill="#0D1830" stroke="rgba(161,161,254,0.25)" stroke-width="1"/>
+        <!-- knob indicator line (pointing to active node ~225°) -->
+        <line x1="160" y1="130" x2="136" y2="109" stroke="#FBFC40" stroke-width="2.5" stroke-linecap="round"/>
+        <circle cx="136" cy="109" r="3.5" fill="#FBFC40"/>
+        <!-- knob grip dots -->
+        <circle cx="160" cy="98" r="2" fill="rgba(161,161,254,0.5)"/>
+        <circle cx="160" cy="162" r="2" fill="rgba(161,161,254,0.5)"/>
+        <circle cx="128" cy="130" r="2" fill="rgba(161,161,254,0.5)"/>
+        <circle cx="192" cy="130" r="2" fill="rgba(161,161,254,0.5)"/>
+      </svg>
+    </div>
+    <div class="card-body">
+      <h3>A — Clock-face (N/E/S/W)</h3>
+      <p>4 steps at 12/3/6/9 o'clock positions. Knob in center with a pointer line that rotates to each active step. Clean, symmetrical.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <svg viewBox="0 0 320 280" style="width:100%;height:200px;background:#0B1A4D;border-radius:8px">
+        <!-- arc track (270° sweep, gap at bottom) -->
+        <path d="M 88 220 A 110 110 0 1 1 232 220" fill="none" stroke="rgba(161,161,254,0.25)" stroke-width="8" stroke-linecap="round"/>
+        <!-- filled portion (3/4 of arc = step 4 active) -->
+        <path d="M 88 220 A 110 110 0 1 1 232 220" fill="none" stroke="rgba(161,161,254,0.12)" stroke-width="8" stroke-linecap="round"/>
+        <!-- active fill up to step 4 -->
+        <path d="M 88 220 A 110 110 0 1 1 160 50" fill="none" stroke="#FBFC40" stroke-width="3" stroke-linecap="round" stroke-dasharray="1"/>
+        <!-- step dots on track -->
+        <circle cx="88" cy="220" r="7" fill="#03027A" stroke="#A1A1FE" stroke-width="1.5"/>
+        <circle cx="50" cy="130" r="7" fill="#03027A" stroke="#A1A1FE" stroke-width="1.5"/>
+        <circle cx="160" cy="50" r="7" fill="#03027A" stroke="#A1A1FE" stroke-width="1.5"/>
+        <circle cx="270" cy="130" r="7" fill="#FBFC40" stroke="#FBFC40" stroke-width="1.5"/>
+        <!-- labels -->
+        <text x="68" y="245" text-anchor="middle" fill="#CDCDFE" font-size="10" font-family="monospace">Audit</text>
+        <text x="28" y="128" text-anchor="start" fill="#CDCDFE" font-size="10" font-family="monospace">Model</text>
+        <text x="160" y="40" text-anchor="middle" fill="#CDCDFE" font-size="10" font-family="monospace">Tune</text>
+        <text x="280" y="128" text-anchor="start" fill="#FBFC40" font-size="10" font-family="monospace">Pilot-ready</text>
+        <!-- center knob -->
+        <circle cx="160" cy="155" r="48" fill="#1B2943" stroke="rgba(205,205,254,0.4)" stroke-width="1.5"/>
+        <circle cx="160" cy="155" r="38" fill="#0D1830" stroke="rgba(161,161,254,0.2)" stroke-width="1"/>
+        <!-- knob pointer pointing right (step 4 at 3 o'clock) -->
+        <line x1="160" y1="155" x2="196" y2="155" stroke="#FBFC40" stroke-width="2.5" stroke-linecap="round"/>
+        <circle cx="196" cy="155" r="3.5" fill="#FBFC40"/>
+        <!-- step label in center -->
+        <text x="160" y="150" text-anchor="middle" fill="white" font-size="10" font-family="monospace">Pilot-ready</text>
+        <text x="160" y="163" text-anchor="middle" fill="white" font-size="10" font-family="monospace">process</text>
+      </svg>
+    </div>
+    <div class="card-body">
+      <h3>B — Arc dial (270° sweep)</h3>
+      <p>Steps on a 270° arc like a volume knob. Knob center shows current step name. Gap at bottom. More instrument-like feel.</p>
+    </div>
+  </div>
+
+</div>

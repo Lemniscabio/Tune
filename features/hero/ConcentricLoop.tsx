@@ -1,422 +1,734 @@
 'use client';
 
-import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
-import { useEffect, useState } from 'react';
+import { AnimatePresence, animate, motion, useMotionValue, useReducedMotion, useTransform } from 'motion/react';
+import {
+  type KeyboardEvent as ReactKeyboardEvent,
+  type PointerEvent as ReactPointerEvent,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 
-type LoopStep = {
-  number: string;
-  label: string;
+// ─── Data ────────────────────────────────────────────────────────────────────
+
+const STEPS = [
+  { id: '01', line1: 'Audit the',   line2: 'process' },
+  { id: '02', line1: 'Model the',   line2: 'process' },
+  { id: '03', line1: 'Tune the',    line2: 'process' },
+  { id: '04', line1: 'Pilot-ready', line2: 'process' },
+] as const;
+
+// ─── Geometry ─────────────────────────────────────────────────────────────────
+
+const STEP_COUNT = 4;
+const HOLD_MS    = 1300;
+const TRAVEL_MS  = 920;
+const SNAP_MS    = 420;
+const EASE       = [0.4, 0, 0.2, 1] as [number, number, number, number];
+const SNAP_EASE  = [0.23, 1, 0.32, 1] as [number, number, number, number];
+const VIEW       = 560;
+const CX         = 280;
+const CY         = 280;
+const RING_R     = 176;
+const NODE_R     = 10.5;
+const GAP_DEG    = 13;
+const ACTIVE_ARC_DEG = 78;
+
+const KNOB_R     = 96;
+const KNOB_INNER = 67;
+const TICK_N     = 56;
+const IND_R      = KNOB_R - 14;
+const KNOB_HEAD_DEG = -90;
+const DRAG_TAP_THRESHOLD_DEG = 4;
+const KNOB_EXPANDED_SCALE = 1.065;
+const MOMENTUM_PROJECT_SECONDS = 0.28;
+const MOMENTUM_MAX_DEG = 270;
+const MOMENTUM_MIN_VELOCITY = 90;
+
+// Section to scroll to when step labels/nodes are clicked
+const HOW_IT_WORKS_ID = 'engagement-journey';
+
+function polar(r: number, deg: number) {
+  const rad = (deg * Math.PI) / 180;
+  return { x: +(CX + r * Math.cos(rad)).toFixed(2), y: +(CY + r * Math.sin(rad)).toFixed(2) };
+}
+
+function arcD(r: number, fromDeg: number, toDeg: number) {
+  let to = toDeg;
+  if (to <= fromDeg) to += 360;
+  const s = polar(r, fromDeg);
+  const e = polar(r, to);
+  const large = to - fromDeg > 180 ? 1 : 0;
+  return `M ${s.x} ${s.y} A ${r} ${r} 0 ${large} 1 ${e.x} ${e.y}`;
+}
+
+const stepDeg = (i: number) => -90 + i * 90;
+
+function positiveModulo(value: number, modulo: number) {
+  return ((value % modulo) + modulo) % modulo;
+}
+
+function shortestDeltaDeg(fromDeg: number, toDeg: number) {
+  return ((toDeg - fromDeg + 540) % 360) - 180;
+}
+
+function stepFromRotation(rotation: number) {
+  return positiveModulo(Math.round(rotation / 90), STEP_COUNT);
+}
+
+function snappedRotation(rotation: number) {
+  return Math.round(rotation / 90) * 90;
+}
+
+function projectedMomentumDeg(velocityDegPerSecond: number) {
+  if (Math.abs(velocityDegPerSecond) < MOMENTUM_MIN_VELOCITY) return 0;
+
+  const projected = velocityDegPerSecond * MOMENTUM_PROJECT_SECONDS;
+  return Math.max(-MOMENTUM_MAX_DEG, Math.min(MOMENTUM_MAX_DEG, projected));
+}
+
+function rotationForStep(step: number, currentRotation: number) {
+  const currentMod = positiveModulo(currentRotation, 360);
+  const targetMod = step * 90;
+  return currentRotation + shortestDeltaDeg(currentMod, targetMod);
+}
+
+function activeArcD(rotation: number) {
+  const headDeg = KNOB_HEAD_DEG + rotation;
+  return arcD(RING_R, headDeg - ACTIVE_ARC_DEG, headDeg);
+}
+
+const knobTicks = Array.from({ length: TICK_N }, (_, i) => {
+  const deg   = (i / TICK_N) * 360 - 90;
+  const major = i % (TICK_N / 4) === 0;
+  const mid   = i % (TICK_N / 8) === 0;
+  const r0    = KNOB_R - (major ? 11 : mid ? 7 : 4.5);
+  const r1    = KNOB_R - 1.5;
+  return { a: polar(r0, deg), b: polar(r1, deg), major, mid };
+});
+
+function scrollToSection() {
+  const el = document.getElementById(HOW_IT_WORKS_ID);
+  if (el) el.scrollIntoView({ behavior: 'smooth' });
+}
+
+type KnobDrag = {
+  pointerId: number;
+  previousDeg: number;
+  rotation: number;
+  totalTravelDeg: number;
+  lastTime: number;
+  velocityDegPerSecond: number;
 };
 
-const STEPS: readonly LoopStep[] = [
-  { number: '01', label: 'Initial design' },
-  { number: '02', label: 'Run experiments' },
-  { number: '03', label: 'Train hybrid model' },
-  { number: '04', label: 'Adaptive optimization' },
-  { number: '05', label: 'Recommend next runs' },
-  { number: '06', label: 'Update feasible region' },
-] as const;
+type TouchPoint = {
+  identifier: number;
+  clientX: number;
+  clientY: number;
+};
 
-const STEP_NOTES: readonly string[] = [
-  'Select the first design from current process evidence.',
-  'Capture structured run data against the active design.',
-  'Fit the hybrid model and update uncertainty.',
-  'Choose the highest-learning move inside constraints.',
-  'Return the next experiment set with rationale.',
-  'Narrow the operating region for the next cycle.',
-] as const;
+type TouchCollection = {
+  length: number;
+  item(index: number): TouchPoint | null;
+};
 
-const STEP_HOLD_MS = 3200;
-const ARC_TRAVEL_MS = 1250;
-const STEP_COUNT = STEPS.length;
-const VIEW_BOX = 560;
-const CENTER = VIEW_BOX / 2;
-const LOOP_RADIUS = 196;
-const NODE_RADIUS = 13;
-const INNER_RINGS = [70, 104, 138] as const;
-const TICK_COUNT = 96;
-const EASE = [0.4, 0, 0.2, 1] as const;
+function findTouch(touches: TouchCollection, identifier: number) {
+  for (let index = 0; index < touches.length; index += 1) {
+    const touch = touches.item(index);
+    if (touch?.identifier === identifier) return touch;
+  }
 
-function roundCoord(value: number) {
-  return Number(value.toFixed(3));
+  return null;
 }
 
-const ticks = Array.from({ length: TICK_COUNT }, (_, index) => {
-  const angle = (index / TICK_COUNT) * 360 - 90;
-  const major = index % 6 === 0;
-  return {
-    angle,
-    major,
-    inner: LOOP_RADIUS + (major ? 13 : 17),
-    outer: LOOP_RADIUS + 24,
-  };
-});
-
-const gridDots = Array.from({ length: 13 * 13 }, (_, index) => {
-  const col = index % 13;
-  const row = Math.floor(index / 13);
-  return {
-    x: CENTER - 156 + col * 26,
-    y: CENTER - 156 + row * 26,
-  };
-}).filter(({ x, y }) => {
-  const dx = x - CENTER;
-  const dy = y - CENTER;
-  return Math.sqrt(dx * dx + dy * dy) < LOOP_RADIUS - 22;
-});
-
-function pointAt(radius: number, angleDeg: number) {
-  const angle = (angleDeg * Math.PI) / 180;
-  return {
-    x: roundCoord(CENTER + radius * Math.cos(angle)),
-    y: roundCoord(CENTER + radius * Math.sin(angle)),
-  };
-}
-
-function arcPath(radius: number, fromDeg: number, toDeg: number) {
-  const normalizedToDeg = toDeg <= fromDeg ? toDeg + 360 : toDeg;
-  const start = pointAt(radius, fromDeg);
-  const end = pointAt(radius, normalizedToDeg);
-  const largeArc = Math.abs(normalizedToDeg - fromDeg) > 180 ? 1 : 0;
-  return `M ${start.x} ${start.y} A ${radius} ${radius} 0 ${largeArc} 1 ${end.x} ${end.y}`;
-}
+// ─── Component ────────────────────────────────────────────────────────────────
 
 export function ConcentricLoop() {
-  return <OptimizationLoopVisual />;
-}
-
-function OptimizationLoopVisual() {
   const reduced = useReducedMotion();
-  const [state, setState] = useState<{
-    activeIndex: number;
-    targetIndex: number | null;
-    iteration: number;
-  }>({ activeIndex: 0, targetIndex: null, iteration: 0 });
+  const [active, setActive] = useState(0);
+  const [dragging, setDragging] = useState(false);
+  const [hoveringKnob, setHoveringKnob] = useState(false);
+  const [focusedKnob, setFocusedKnob] = useState(false);
+  const [settling, setSettling] = useState(false);
+  const svgRef = useRef<SVGSVGElement>(null);
+  const knobHitRef = useRef<SVGCircleElement>(null);
+  const dragRef = useRef<KnobDrag | null>(null);
+  const animationRef = useRef<ReturnType<typeof animate> | null>(null);
+  const settleTimerRef = useRef<number | null>(null);
+  const motRot = useMotionValue(0);
+  const activeArcPath = useTransform(motRot, activeArcD);
+  const knobExpanded = dragging || hoveringKnob || focusedKnob;
+
+  const clearSettleTimer = useCallback(() => {
+    if (settleTimerRef.current === null) return;
+    window.clearTimeout(settleTimerRef.current);
+    settleTimerRef.current = null;
+  }, []);
+
+  const stopRotationAnimation = useCallback(() => {
+    animationRef.current?.stop();
+    animationRef.current = null;
+    clearSettleTimer();
+    setSettling(false);
+  }, [clearSettleTimer]);
+
+  const animateToRotation = useCallback((targetRotation: number, durationMs = SNAP_MS, ease = SNAP_EASE) => {
+    animationRef.current?.stop();
+    clearSettleTimer();
+
+    if (reduced || durationMs <= 0) {
+      motRot.set(targetRotation);
+      setSettling(false);
+      return;
+    }
+
+    setSettling(true);
+    animationRef.current = animate(motRot, targetRotation, {
+      duration: durationMs / 1000,
+      ease,
+    });
+    settleTimerRef.current = window.setTimeout(() => {
+      animationRef.current = null;
+      settleTimerRef.current = null;
+      setSettling(false);
+    }, durationMs);
+  }, [clearSettleTimer, motRot, reduced]);
+
+  const pointerDegFromEvent = useCallback((event: { clientX: number; clientY: number }) => {
+    const svg = svgRef.current;
+    if (!svg) return null;
+
+    const matrix = svg.getScreenCTM();
+    if (matrix) {
+      const point = svg.createSVGPoint();
+      point.x = event.clientX;
+      point.y = event.clientY;
+      const local = point.matrixTransform(matrix.inverse());
+      return Math.atan2(local.y - CY, local.x - CX) * 180 / Math.PI;
+    }
+
+    const bounds = svg.getBoundingClientRect();
+    const x = ((event.clientX - bounds.left) / bounds.width) * VIEW;
+    const y = ((event.clientY - bounds.top) / bounds.height) * VIEW;
+    return Math.atan2(y - CY, x - CX) * 180 / Math.PI;
+  }, []);
+
+  const goToStep = useCallback((i: number) => {
+    const targetRotation = rotationForStep(i, motRot.get());
+    animateToRotation(targetRotation, TRAVEL_MS, EASE);
+  }, [animateToRotation, motRot]);
+
+  const startKnobDrag = useCallback((pointerId: number, point: { clientX: number; clientY: number }) => {
+    const pointerDeg = pointerDegFromEvent(point);
+    if (pointerDeg === null) return false;
+    const now = performance.now();
+
+    stopRotationAnimation();
+    dragRef.current = {
+      pointerId,
+      previousDeg: pointerDeg,
+      rotation: motRot.get(),
+      totalTravelDeg: 0,
+      lastTime: now,
+      velocityDegPerSecond: 0,
+    };
+    setDragging(true);
+    return true;
+  }, [motRot, pointerDegFromEvent, stopRotationAnimation]);
+
+  const updateKnobDrag = useCallback((pointerId: number, point: { clientX: number; clientY: number }) => {
+    const drag = dragRef.current;
+    if (!drag || drag.pointerId !== pointerId) return;
+
+    const pointerDeg = pointerDegFromEvent(point);
+    if (pointerDeg === null) return;
+
+    const now = performance.now();
+    const delta = shortestDeltaDeg(drag.previousDeg, pointerDeg);
+    const elapsedSeconds = Math.max((now - drag.lastTime) / 1000, 0.016);
+
+    drag.previousDeg = pointerDeg;
+    drag.rotation += delta;
+    drag.totalTravelDeg += Math.abs(delta);
+    drag.lastTime = now;
+    drag.velocityDegPerSecond = delta / elapsedSeconds;
+    motRot.set(drag.rotation);
+  }, [motRot, pointerDegFromEvent]);
+
+  const finishKnobDrag = useCallback((pointerId: number, cancelled = false) => {
+    const drag = dragRef.current;
+    if (!drag || drag.pointerId !== pointerId) return;
+
+    dragRef.current = null;
+    setDragging(false);
+
+    const rotation = motRot.get();
+    const targetRotation = !cancelled && drag.totalTravelDeg < DRAG_TAP_THRESHOLD_DEG
+      ? snappedRotation(rotation) + 90
+      : snappedRotation(rotation + projectedMomentumDeg(drag.velocityDegPerSecond));
+
+    const momentumDuration = Math.min(
+      1100,
+      TRAVEL_MS + Math.abs(targetRotation - rotation) * 1.2,
+    );
+
+    animateToRotation(
+      targetRotation,
+      cancelled ? SNAP_MS : momentumDuration,
+      cancelled ? SNAP_EASE : EASE,
+    );
+  }, [animateToRotation, motRot]);
+
+  const handleKnobPointerDown = useCallback((event: ReactPointerEvent<SVGCircleElement>) => {
+    if (!event.isPrimary) return;
+
+    event.preventDefault();
+    if (!startKnobDrag(event.pointerId, event)) return;
+
+    event.currentTarget.setPointerCapture(event.pointerId);
+  }, [startKnobDrag]);
+
+  const handleKnobPointerMove = useCallback((event: ReactPointerEvent<SVGCircleElement>) => {
+    updateKnobDrag(event.pointerId, event);
+  }, [updateKnobDrag]);
+
+  const finishKnobPointerInteraction = useCallback((
+    event: ReactPointerEvent<SVGCircleElement>,
+    cancelled = false,
+  ) => {
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+
+    finishKnobDrag(event.pointerId, cancelled);
+  }, [finishKnobDrag]);
+
+  const handleKnobKeyDown = useCallback((event: ReactKeyboardEvent<SVGCircleElement>) => {
+    if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
+      event.preventDefault();
+      animateToRotation(snappedRotation(motRot.get()) + 90, TRAVEL_MS, EASE);
+      return;
+    }
+
+    if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
+      event.preventDefault();
+      animateToRotation(snappedRotation(motRot.get()) - 90, TRAVEL_MS, EASE);
+      return;
+    }
+
+    if (event.key === 'Home') {
+      event.preventDefault();
+      goToStep(0);
+      return;
+    }
+
+    if (event.key === 'End') {
+      event.preventDefault();
+      goToStep(STEP_COUNT - 1);
+    }
+  }, [animateToRotation, goToStep, motRot]);
 
   useEffect(() => {
-    if (reduced) return;
-    if (state.targetIndex !== null) return;
-
-    const holdTimer = window.setTimeout(() => {
-      setState((current) => ({
-        ...current,
-        targetIndex: (current.activeIndex + 1) % STEP_COUNT,
-      }));
-    }, STEP_HOLD_MS);
-
-    return () => window.clearTimeout(holdTimer);
-  }, [reduced, state.activeIndex, state.targetIndex]);
-
-  const activeStep = STEPS[state.activeIndex];
-  const previousStepIndex = (state.activeIndex + STEP_COUNT - 1) % STEP_COUNT;
-  const restingArcStart = -90 + previousStepIndex * 60 + 8;
-  const restingArcEnd = -90 + state.activeIndex * 60 - 8;
-  const travelTargetIndex = state.targetIndex ?? state.activeIndex;
-  const activeArcStart = -90 + state.activeIndex * 60 + 8;
-  const activeArcEnd = -90 + travelTargetIndex * 60 - 8;
-  const confidenceScale = 1 - state.activeIndex * 0.035;
-  const isUpdateStep = state.activeIndex === STEP_COUNT - 1;
-  const isTraveling = state.targetIndex !== null;
-
-  function commitTargetStep() {
-    setState((current) => {
-      const { targetIndex, iteration } = current;
-      if (targetIndex === null) {
-        return current;
-      }
-
-      return {
-        activeIndex: targetIndex,
-        targetIndex: null,
-        iteration: iteration + (targetIndex === 0 ? 1 : 0),
-      };
+    const unsubscribe = motRot.on('change', (latest) => {
+      const nextActive = stepFromRotation(latest);
+      setActive((current) => (current === nextActive ? current : nextActive));
     });
-  }
+
+    return unsubscribe;
+  }, [motRot]);
+
+  useEffect(() => {
+    if (reduced || dragging || settling) return;
+
+    const timer = window.setTimeout(() => {
+      animateToRotation(snappedRotation(motRot.get()) + 90, TRAVEL_MS, EASE);
+    }, HOLD_MS);
+
+    return () => window.clearTimeout(timer);
+  }, [active, animateToRotation, dragging, motRot, reduced, settling]);
+
+  useEffect(() => {
+    const knobHit = knobHitRef.current;
+    if (!knobHit) return;
+
+    const listenerOptions = { passive: false };
+
+    const handleTouchStart = (event: TouchEvent) => {
+      const touch = event.changedTouches.item(0);
+      if (!touch) return;
+
+      event.preventDefault();
+      startKnobDrag(touch.identifier, touch);
+    };
+
+    const handleTouchMove = (event: TouchEvent) => {
+      const drag = dragRef.current;
+      if (!drag) return;
+
+      const touch = findTouch(event.changedTouches, drag.pointerId) ?? findTouch(event.touches, drag.pointerId);
+      if (!touch) return;
+
+      event.preventDefault();
+      updateKnobDrag(touch.identifier, touch);
+    };
+
+    const handleTouchEnd = (event: TouchEvent) => {
+      const drag = dragRef.current;
+      if (!drag) return;
+
+      const touch = findTouch(event.changedTouches, drag.pointerId);
+      if (!touch) return;
+
+      event.preventDefault();
+      finishKnobDrag(touch.identifier);
+    };
+
+    const handleTouchCancel = (event: TouchEvent) => {
+      const drag = dragRef.current;
+      if (!drag) return;
+
+      const touch = findTouch(event.changedTouches, drag.pointerId);
+      if (!touch) return;
+
+      event.preventDefault();
+      finishKnobDrag(touch.identifier, true);
+    };
+
+    knobHit.addEventListener('touchstart', handleTouchStart, listenerOptions);
+    knobHit.addEventListener('touchmove', handleTouchMove, listenerOptions);
+    knobHit.addEventListener('touchend', handleTouchEnd, listenerOptions);
+    knobHit.addEventListener('touchcancel', handleTouchCancel, listenerOptions);
+
+    return () => {
+      knobHit.removeEventListener('touchstart', handleTouchStart);
+      knobHit.removeEventListener('touchmove', handleTouchMove);
+      knobHit.removeEventListener('touchend', handleTouchEnd);
+      knobHit.removeEventListener('touchcancel', handleTouchCancel);
+    };
+  }, [finishKnobDrag, startKnobDrag, updateKnobDrag]);
+
+  useEffect(() => {
+    return () => {
+      animationRef.current?.stop();
+      clearSettleTimer();
+    };
+  }, [clearSettleTimer]);
 
   return (
     <figure
       className="relative mx-auto aspect-square w-full max-w-[380px] sm:max-w-[460px] md:max-w-[520px]"
-      aria-label="Six-step closed-loop optimization process"
+      aria-label="Tune four-step process: Audit, Model, Tune, Pilot-ready"
     >
       <svg
-        viewBox={`0 0 ${VIEW_BOX} ${VIEW_BOX}`}
+        ref={svgRef}
+        viewBox={`0 0 ${VIEW} ${VIEW}`}
         className="absolute inset-0 h-full w-full overflow-visible"
         role="img"
       >
-        <title>OPTDOE closed-loop optimization instrument</title>
+        {/* ── Defs ─────────────────────────────────────────────────────── */}
+        <defs>
+          <radialGradient id="tlKnobBody" cx="36%" cy="28%" r="72%">
+            <stop offset="0%"   stopColor="#DDE3EF" />
+            <stop offset="28%"  stopColor="#C4CAD8" />
+            <stop offset="58%"  stopColor="#98A2B4" />
+            <stop offset="85%"  stopColor="#748092" />
+            <stop offset="100%" stopColor="#5C6878" />
+          </radialGradient>
+          <radialGradient id="tlKnobSpecular" cx="40%" cy="22%" r="46%">
+            <stop offset="0%"   stopColor="rgba(255,255,255,0.78)" />
+            <stop offset="42%"  stopColor="rgba(255,255,255,0.22)" />
+            <stop offset="100%" stopColor="rgba(255,255,255,0)"    />
+          </radialGradient>
+          <radialGradient id="tlKnobRim" cx="50%" cy="50%" r="50%">
+            <stop offset="68%"  stopColor="rgba(0,0,0,0)"    />
+            <stop offset="92%"  stopColor="rgba(0,0,0,0.26)" />
+            <stop offset="100%" stopColor="rgba(0,0,0,0.44)" />
+          </radialGradient>
+          <radialGradient id="tlKnobInner" cx="38%" cy="30%" r="68%">
+            <stop offset="0%"   stopColor="#B8C2D0" />
+            <stop offset="100%" stopColor="#8A94A6" />
+          </radialGradient>
+          <radialGradient id="tlIndicator" cx="34%" cy="28%" r="62%">
+            <stop offset="0%"   stopColor="#FF8C5A" />
+            <stop offset="55%"  stopColor="#E84C18" />
+            <stop offset="100%" stopColor="#A83010" />
+          </radialGradient>
+          <radialGradient id="tlKnobAmbient" cx="50%" cy="50%" r="50%">
+            <stop offset="0%"   stopColor="rgba(180,190,220,0.14)" />
+            <stop offset="100%" stopColor="rgba(0,0,0,0)"          />
+          </radialGradient>
+          <filter id="tlKnobShadow" x="-35%" y="-35%" width="170%" height="170%">
+            <feDropShadow dx="0" dy="12" stdDeviation="18" floodColor="rgba(0,0,0,0.70)" />
+          </filter>
+        </defs>
 
-        <circle
-          cx={CENTER}
-          cy={CENTER}
-          r={LOOP_RADIUS + 38}
-          fill="rgba(3,2,122,0.16)"
-          stroke="rgba(205,205,254,0.16)"
+        {/* ── Background disc ──────────────────────────────────────────── */}
+        <circle cx={CX} cy={CY} r={RING_R + 42}
+          fill="rgba(3,2,122,0.11)"
+          stroke="rgba(205,205,254,0.12)"
+          strokeWidth={1}
+        />
+
+        {/* ── Orbit ring (dashed) ───────────────────────────────────────── */}
+        <circle cx={CX} cy={CY} r={RING_R}
+          fill="none"
+          stroke="rgba(161,161,254,0.28)"
           strokeWidth={1.1}
+          strokeDasharray="2.5 6"
         />
 
-        {gridDots.map((dot) => (
-          <circle key={`${dot.x}-${dot.y}`} cx={dot.x} cy={dot.y} r={1.1} fill="#A1A1FE" opacity={0.18} />
-        ))}
-
-        {ticks.map((tick) => {
-          const start = pointAt(tick.inner, tick.angle);
-          const end = pointAt(tick.outer, tick.angle);
-          return (
-            <line
-              key={tick.angle}
-              x1={start.x}
-              y1={start.y}
-              x2={end.x}
-              y2={end.y}
-              stroke="#CDCDFE"
-              strokeOpacity={tick.major ? 0.48 : 0.26}
-              strokeWidth={tick.major ? 1.05 : 0.7}
-              strokeLinecap="round"
-            />
-          );
-        })}
-
-        <circle
-          cx={CENTER}
-          cy={CENTER}
-          r={LOOP_RADIUS}
-          fill="none"
-          stroke="rgba(205,205,254,0.52)"
-          strokeWidth={1.45}
-        />
-        <circle
-          cx={CENTER}
-          cy={CENTER}
-          r={LOOP_RADIUS + 8}
-          fill="none"
-          stroke="rgba(161,161,254,0.26)"
-          strokeWidth={0.95}
-          strokeDasharray="2 7"
-        />
-
-        {STEPS.map((_, index) => {
-          const from = -90 + index * 60 + 10;
-          const to = -90 + ((index + 1) % STEP_COUNT) * 60 - 10;
-          return (
-            <path
-              key={index}
-              d={arcPath(LOOP_RADIUS, from, to)}
-              fill="none"
-              stroke="#A1A1FE"
-              strokeOpacity={0.58}
-              strokeWidth={1.45}
-            />
-          );
-        })}
-
-        <AnimatePresence mode="wait">
-          {isTraveling ? (
-            <g key={`travel-${state.iteration}-${state.activeIndex}-${travelTargetIndex}`}>
-              <motion.path
-                d={arcPath(LOOP_RADIUS, activeArcStart, activeArcEnd)}
-                fill="none"
-                stroke="#FBFC40"
-                strokeWidth={2.4}
-                strokeLinecap="round"
-                initial={{ pathLength: 0, opacity: 1 }}
-                animate={{ pathLength: 1, opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: ARC_TRAVEL_MS / 1000, ease: EASE }}
-                onAnimationComplete={commitTargetStep}
-              />
-            </g>
-          ) : (
-            <motion.path
-              key={`rest-${state.iteration}-${state.activeIndex}`}
-              d={arcPath(LOOP_RADIUS, restingArcStart, restingArcEnd)}
-              fill="none"
-              stroke="#FBFC40"
-              strokeWidth={2.4}
-              strokeLinecap="round"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 0.85 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: reduced ? 0 : 0.35, ease: EASE }}
-            />
-          )}
-        </AnimatePresence>
-
-        <FeasibleRegionRings scale={confidenceScale} reduced={Boolean(reduced)} />
-
-        {STEPS.map((step, index) => (
-          <StepNode
-            key={step.number}
-            step={step}
-            index={index}
-            active={index === state.activeIndex}
-            reduced={Boolean(reduced)}
+        {/* ── Static arc segments ───────────────────────────────────────── */}
+        {STEPS.map((_, i) => (
+          <path key={i}
+            d={arcD(RING_R, stepDeg(i) + GAP_DEG, stepDeg((i + 1) % STEP_COUNT) - GAP_DEG)}
+            fill="none"
+            stroke="#7A88C0"
+            strokeOpacity={0.32}
+            strokeWidth={1.1}
           />
         ))}
 
-      </svg>
-
-      <CurrentStepCard
-        step={activeStep}
-        note={STEP_NOTES[state.activeIndex]}
-        isUpdateStep={isUpdateStep}
-        reduced={Boolean(reduced)}
-      />
-    </figure>
-  );
-}
-
-function StepNode({
-  step,
-  index,
-  active,
-  reduced,
-}: {
-  step: LoopStep;
-  index: number;
-  active: boolean;
-  reduced: boolean;
-}) {
-  const angle = -90 + index * 60;
-  const node = pointAt(LOOP_RADIUS, angle);
-  const label = pointAt(LOOP_RADIUS + 34, angle);
-  const anchor = label.x < CENTER - 30 ? 'end' : label.x > CENTER + 30 ? 'start' : 'middle';
-  const labelNudgeY = index === 0 ? -4 : index === 3 ? 13 : 5;
-  const words = step.label.split(' ');
-
-  return (
-    <g>
-      <motion.circle
-        cx={node.x}
-        cy={node.y}
-        r={NODE_RADIUS + 6}
-        fill="#FBFC40"
-        initial={false}
-        animate={{ opacity: active ? 0.16 : 0, scale: active ? 1 : 0.9 }}
-        transition={{ duration: reduced ? 0 : 0.8, ease: EASE }}
-        style={{ transformOrigin: `${node.x}px ${node.y}px` }}
-      />
-      <motion.circle
-        cx={node.x}
-        cy={node.y}
-        r={NODE_RADIUS}
-        fill={active ? '#FBFC40' : '#03027A'}
-        stroke={active ? '#FBFC40' : '#A1A1FE'}
-        initial={false}
-        animate={{
-          opacity: active ? 1 : 0.82,
-          scale: active ? 1.03 : 1,
-          strokeWidth: active ? 1.7 : 1.15,
-        }}
-        transition={{ duration: reduced ? 0 : 0.8, ease: EASE }}
-        style={{ transformOrigin: `${node.x}px ${node.y}px` }}
-      />
-      <text
-        x={node.x}
-        y={node.y + 4}
-        textAnchor="middle"
-        className="select-none font-mono text-[12px] font-medium tabular-nums"
-        fill={active ? '#14110E' : '#CDCDFE'}
-      >
-        {step.number}
-      </text>
-      <motion.text
-        x={label.x}
-        y={label.y + labelNudgeY}
-        textAnchor={anchor}
-        className="select-none font-mono text-[13px] tabular-nums"
-        fill={active ? '#FBFC40' : '#CDCDFE'}
-        initial={false}
-        animate={{ opacity: active ? 1 : 0.7 }}
-        transition={{ duration: reduced ? 0 : 0.7, ease: EASE }}
-      >
-        {words.map((word, wordIndex) => (
-          <tspan
-            key={wordIndex}
-            x={label.x}
-            dy={wordIndex === 0 ? 0 : 12}
-          >
-            {word}
-          </tspan>
-        ))}
-      </motion.text>
-    </g>
-  );
-}
-
-function CurrentStepCard({
-  step,
-  note,
-  isUpdateStep,
-  reduced,
-}: {
-  step: LoopStep;
-  note: string;
-  isUpdateStep: boolean;
-  reduced: boolean;
-}) {
-  return (
-    <div className="pointer-events-none absolute left-1/2 top-1/2 size-[156px] -translate-x-1/2 -translate-y-1/2 sm:size-[176px] md:size-[188px]">
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={step.number}
-          initial={{ opacity: 0, y: reduced ? 0 : 4 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: reduced ? 0 : -4 }}
-          transition={{ duration: reduced ? 0 : 0.62, ease: EASE }}
-          className="flex size-full flex-col items-center justify-center rounded-full border px-6 text-center shadow-[0_18px_40px_-26px_rgba(3,2,122,0.78)]"
-          style={{ backgroundColor: '#FFFFFF', borderColor: '#FFFFFF' }}
-        >
-          <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-blue-700/72">
-            {step.number} / 06
-          </p>
-          <p className="mt-3 text-[15px] font-medium leading-tight tracking-[-0.005em] text-blue-900 sm:text-[16px]">
-            {step.label}
-          </p>
-          <p className="mt-3 line-clamp-3 text-[10px] leading-snug text-blue-900/58 sm:text-[11px]">
-            {note}
-          </p>
-          <p className="mt-3 font-mono text-[7px] uppercase tracking-[0.12em] text-blue-700/48 sm:text-[8px]">
-            {isUpdateStep ? 'MODEL UPDATE' : 'ITERATIVE LOOP'}
-          </p>
-        </motion.div>
-      </AnimatePresence>
-    </div>
-  );
-}
-
-function FeasibleRegionRings({ scale, reduced }: { scale: number; reduced: boolean }) {
-  return (
-    <g>
-      {INNER_RINGS.map((radius, index) => (
-        <motion.circle
-          key={index}
-          cx={CENTER}
-          cy={CENTER}
-          r={radius}
+        {/* ── Active arc: its head is locked to the knob's red indicator angle. */}
+        <motion.path
+          d={activeArcPath}
           fill="none"
-          stroke="#A1A1FE"
-          strokeOpacity={0.2 - index * 0.025}
-          strokeWidth={0.9}
-          strokeDasharray="1 4"
+          stroke="#FBFC40"
+          strokeWidth={2.6}
+          strokeLinecap="round"
           initial={false}
-          animate={{ scale }}
-          transition={{ duration: reduced ? 0 : 1.05, ease: EASE }}
-          style={{ transformOrigin: `${CENTER}px ${CENTER}px` }}
+          animate={{ opacity: dragging ? 1 : 0.84 }}
+          transition={{ duration: reduced ? 0 : 0.16, ease: 'easeOut' }}
         />
-      ))}
-      <motion.circle
-        cx={CENTER}
-        cy={CENTER}
-        r={42}
-        fill="none"
-        stroke="#FBFC40"
-        strokeOpacity={0.2}
-        strokeWidth={1}
-        initial={false}
-        animate={{ scale: 0.86 + scale * 0.14 }}
-        transition={{ duration: reduced ? 0 : 1.05, ease: EASE }}
-        style={{ transformOrigin: `${CENTER}px ${CENTER}px` }}
-      />
-    </g>
+
+        {/* ── Step nodes + labels (clickable) ──────────────────────────── */}
+        {STEPS.map((step, i) => {
+          const isActive = i === active;
+          const deg      = stepDeg(i);
+          const node     = polar(RING_R, deg);
+          const labelR   = RING_R + 36;
+          const lp       = polar(labelR, deg);
+          const anchor   = i === 0 || i === 2 ? 'middle' : i === 1 ? 'start' : 'end';
+          const baseY    = i === 0 ? lp.y - 9 : i === 2 ? lp.y + 2 : lp.y - 7;
+          // Active label is larger
+          const fontSize = isActive ? 13.5 : 11;
+
+          return (
+            <g
+              key={step.id}
+              style={{ cursor: 'pointer' }}
+              onClick={() => {
+                goToStep(i);
+                scrollToSection();
+              }}
+            >
+              {/* Hit target — invisible, generous area */}
+              <circle cx={node.x} cy={node.y} r={NODE_R + 22} fill="transparent" />
+
+              {/* Glow halo */}
+              <motion.circle
+                cx={node.x} cy={node.y} r={NODE_R + 10}
+                fill="#FBFC40"
+                initial={false}
+                animate={{ opacity: isActive ? 0.18 : 0, scale: isActive ? 1 : 0.6 }}
+                transition={{ duration: reduced ? 0 : 0.7, ease: [0.23, 1, 0.32, 1] }}
+                style={{ transformOrigin: `${node.x}px ${node.y}px` }}
+              />
+
+              {/* Node body */}
+              <motion.circle
+                cx={node.x} cy={node.y} r={NODE_R}
+                fill={isActive ? '#FBFC40' : '#0D1A38'}
+                stroke={isActive ? '#FBFC40' : '#6878A8'}
+                strokeWidth={isActive ? 2 : 1.2}
+                initial={false}
+                animate={{ scale: isActive ? 1.08 : 1 }}
+                transition={{ duration: reduced ? 0 : 0.65, ease: [0.23, 1, 0.32, 1] }}
+                style={{ transformOrigin: `${node.x}px ${node.y}px` }}
+              />
+
+              {/* Step number */}
+              <text
+                x={node.x} y={node.y + 4}
+                textAnchor="middle"
+                fill={isActive ? '#0A1020' : '#8898C8'}
+                fontSize={9.5}
+                fontFamily="monospace"
+                fontWeight="700"
+                style={{ userSelect: 'none' }}
+              >
+                {step.id}
+              </text>
+
+              {/* Label — two lines, grows when active */}
+              <motion.text
+                x={lp.x}
+                textAnchor={anchor}
+                fontFamily="monospace"
+                fontWeight={isActive ? '700' : '400'}
+                initial={false}
+                animate={{
+                  fill: isActive ? '#FBFC40' : 'rgba(161,161,254,0.68)',
+                  fontSize,
+                }}
+                transition={{ duration: reduced ? 0 : 0.45, ease: [0.23, 1, 0.32, 1] }}
+                style={{ userSelect: 'none' }}
+              >
+                <tspan x={lp.x} y={baseY}>{step.line1}</tspan>
+                <tspan x={lp.x} dy={16}>{step.line2}</tspan>
+              </motion.text>
+            </g>
+          );
+        })}
+
+        {/* ══════════════════════════════════════════════════════════════════
+            PHYSICAL KNOB — interactive (drag to rotate)
+        ══════════════════════════════════════════════════════════════════ */}
+
+        <motion.g
+          initial={false}
+          animate={{ scale: knobExpanded ? KNOB_EXPANDED_SCALE : 1 }}
+          transition={{ duration: reduced ? 0 : 0.22, ease: [0.23, 1, 0.32, 1] }}
+          style={{ transformOrigin: `${CX}px ${CY}px` }}
+        >
+          {/* Ambient glow */}
+          <circle cx={CX} cy={CY} r={KNOB_R + 22} fill="url(#tlKnobAmbient)" />
+
+          {/* Cast shadow */}
+          <circle cx={CX} cy={CY + 12} r={KNOB_R - 6}
+            fill="rgba(0,0,0,0.52)"
+            style={{ filter: 'blur(20px)' }}
+          />
+
+          {/* Body dome + drop shadow — FIXED (light source doesn't rotate) */}
+          <circle cx={CX} cy={CY} r={KNOB_R}
+            fill="url(#tlKnobBody)"
+            filter="url(#tlKnobShadow)"
+            stroke="rgba(255,255,255,0.09)"
+            strokeWidth={0.8}
+          />
+          {/* Rim edge darkening */}
+          <circle cx={CX} cy={CY} r={KNOB_R} fill="url(#tlKnobRim)" />
+          {/* Specular highlight */}
+          <circle cx={CX} cy={CY} r={KNOB_R} fill="url(#tlKnobSpecular)" />
+
+          {/* ROTATING GROUP — ticks + bevel + disc + indicator */}
+          <motion.g
+            style={{
+              rotate: motRot,
+              transformOrigin: `${CX}px ${CY}px`,
+            }}
+          >
+            {/* Tick marks — more visible */}
+            {knobTicks.map(({ a, b, major, mid }, i) => (
+              <line key={i}
+                x1={a.x} y1={a.y} x2={b.x} y2={b.y}
+                stroke={
+                  major ? 'rgba(20,32,52,0.90)' :
+                  mid   ? 'rgba(30,44,68,0.72)' :
+                          'rgba(45,62,92,0.52)'
+                }
+                strokeWidth={major ? 2.0 : mid ? 1.4 : 0.9}
+                strokeLinecap="round"
+              />
+            ))}
+
+            {/* Bevel: shadow ring */}
+            <circle cx={CX} cy={CY} r={KNOB_R - 13}
+              fill="none" stroke="rgba(0,0,0,0.28)" strokeWidth={1.5} />
+            {/* Bevel: lit ring */}
+            <circle cx={CX + 0.5} cy={CY - 0.5} r={KNOB_R - 14}
+              fill="none" stroke="rgba(255,255,255,0.32)" strokeWidth={0.9} />
+
+            {/* Inner recessed disc */}
+            <circle cx={CX} cy={CY} r={KNOB_INNER}
+              fill="url(#tlKnobInner)"
+              stroke="rgba(0,0,0,0.18)"
+              strokeWidth={0.8}
+            />
+            {/* Disc top-highlight lip */}
+            <circle cx={CX} cy={CY} r={KNOB_INNER}
+              fill="none"
+              stroke="rgba(255,255,255,0.22)"
+              strokeWidth={0.7}
+              strokeDasharray={`${KNOB_INNER * 1.5} ${KNOB_INNER * 10}`}
+              strokeDashoffset={`${KNOB_INNER * 0.5}`}
+            />
+
+            {/* Indicator stem */}
+            <line
+              x1={CX} y1={CY - IND_R - 5}
+              x2={CX} y2={CY - IND_R + 7}
+              stroke="rgba(120,50,20,0.55)"
+              strokeWidth={2.6}
+              strokeLinecap="round"
+            />
+            {/* Indicator jewel */}
+            <circle cx={CX} cy={CY - IND_R} r={6}
+              fill="url(#tlIndicator)"
+              stroke="rgba(255,255,255,0.28)"
+              strokeWidth={0.8}
+            />
+            {/* Jewel specular */}
+            <ellipse
+              cx={CX - 1.6} cy={CY - IND_R - 2}
+              rx={2.4} ry={1.6}
+              fill="rgba(255,200,160,0.72)"
+            />
+          </motion.g>
+        </motion.g>
+
+        {/* Interactive hit area on knob — drag to rotate, tap to advance. */}
+        <circle
+          ref={knobHitRef}
+          cx={CX} cy={CY} r={KNOB_R}
+          fill="transparent"
+          role="slider"
+          tabIndex={0}
+          aria-label="Rotate Tune process step"
+          aria-valuemin={1}
+          aria-valuemax={STEP_COUNT}
+          aria-valuenow={active + 1}
+          aria-valuetext={`${STEPS[active].id}: ${STEPS[active].line1} ${STEPS[active].line2}`}
+          style={{
+            cursor: dragging ? 'grabbing' : 'grab',
+            pointerEvents: 'all',
+            touchAction: 'none',
+            userSelect: 'none',
+            WebkitUserSelect: 'none',
+          }}
+          onPointerDown={handleKnobPointerDown}
+          onPointerMove={handleKnobPointerMove}
+          onPointerUp={(event) => finishKnobPointerInteraction(event)}
+          onPointerCancel={(event) => finishKnobPointerInteraction(event, true)}
+          onLostPointerCapture={(event) => finishKnobPointerInteraction(event, true)}
+          onPointerEnter={() => setHoveringKnob(true)}
+          onPointerLeave={() => setHoveringKnob(false)}
+          onFocus={() => setFocusedKnob(true)}
+          onBlur={() => setFocusedKnob(false)}
+          onKeyDown={handleKnobKeyDown}
+        />
+
+        {/* Step counter — above knob, not rotating */}
+        <AnimatePresence mode="wait">
+          <motion.text
+            key={active}
+            x={CX} y={CY + KNOB_INNER - 10}
+            textAnchor="middle"
+            fontSize={8}
+            fontFamily="monospace"
+            fill="rgba(80,95,130,0.80)"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.4 }}
+            style={{ userSelect: 'none', pointerEvents: 'none' }}
+          >
+            {`${STEPS[active].id} / 04`}
+          </motion.text>
+        </AnimatePresence>
+
+      </svg>
+    </figure>
   );
 }
