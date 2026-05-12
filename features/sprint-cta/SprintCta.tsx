@@ -69,6 +69,8 @@ export function SprintCta({ section, id = 'engagement-start' }: SprintCtaProps) 
                 <div className="mt-10">
                   <motion.a
                     href={CALENDLY_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="inline-flex overflow-hidden rounded-full bg-blue-600 px-6 py-3.5 text-[15px] font-medium tracking-[-0.015em] text-white shadow-[0_18px_42px_-26px_rgba(65,64,252,0.54)] [transition:background-color_180ms_cubic-bezier(0.23,1,0.32,1)] hover:bg-blue-700 md:px-7 md:py-4 md:text-[16px]"
                     initial="rest"
                     whileHover="hover"

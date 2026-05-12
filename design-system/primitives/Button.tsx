@@ -24,12 +24,17 @@ const accentShadowMap = {
   lemnisca: 'rgba(184, 106, 46, 0.35)', // #B86A2E
 } as const;
 
+function externalLinkProps(href: string) {
+  return href.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {};
+}
+
 export function Button({ href, variant = 'primary', accent = 'tune', children }: ButtonProps) {
   // New: yellow pill with blue-tinted shadow — used by the redesigned hero.
   if (variant === 'pill') {
     return (
       <motion.a
         href={href}
+        {...externalLinkProps(href)}
         initial="rest"
         whileHover="hover"
         whileTap="tap"
@@ -59,6 +64,7 @@ export function Button({ href, variant = 'primary', accent = 'tune', children }:
     return (
       <Link
         href={href}
+        {...externalLinkProps(href)}
         className={`group inline-flex items-center gap-3 rounded-full ${accentBgMap[accent]} px-7 py-3.5 text-[15px] font-medium tracking-[-0.005em] text-surface-paper transition-[background-color,box-shadow,transform] duration-200 ease-out active:scale-[0.97]`}
         style={{
           boxShadow: `0 1px 0 rgba(20,17,14,0.04), 0 12px 28px -16px ${accentShadowMap[accent]}`,
@@ -73,6 +79,7 @@ export function Button({ href, variant = 'primary', accent = 'tune', children }:
   return (
     <Link
       href={href}
+      {...externalLinkProps(href)}
       className="group inline-flex items-center gap-2 text-[15px] text-ink-black transition-[color,transform] duration-150 ease-out active:scale-[0.985]"
     >
       <span className="relative">

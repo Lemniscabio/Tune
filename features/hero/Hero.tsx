@@ -74,7 +74,7 @@ export function Hero({ hero, sectionToc }: HeroProps) {
                 <AccentUnderline delayMs={700}>
                   {hero.headlineAccent}
                 </AccentUnderline>
-                <span className="whitespace-nowrap">
+                <span className="sm:whitespace-nowrap">
                   {hero.headlineMid ?? ''}
                   {hero.headlineAccent2 ? (
                     <span className="accent-italic text-white">{hero.headlineAccent2}</span>

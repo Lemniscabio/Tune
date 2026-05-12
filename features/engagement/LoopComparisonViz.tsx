@@ -101,7 +101,7 @@ function HorizontalFlow({
   }, [loopBackToIndex]);
 
   return (
-    <div className="overflow-visible pr-6">
+    <div className="overflow-hidden">
       <div className="inline-block min-w-full">
         <div ref={flowRef} className="flex items-center gap-1">
           {steps.map((step, i) => (
@@ -140,9 +140,8 @@ function HorizontalFlow({
         {geom && (
           <svg
             className="pointer-events-none block"
-            width={geom.width + 40}
+            width={geom.width}
             height={H_BRACKET_BOTTOM + 12}
-            style={{ overflow: 'visible' }}
           >
             <path
               d={`M ${geom.rightX} 0 V ${H_BRACKET_BOTTOM} H ${geom.leftX} V ${H_BRACKET_DROP - 4}`}

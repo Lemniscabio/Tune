@@ -16,6 +16,10 @@ type HeroNavProps = {
   items: ReadonlyArray<{ label: string; href: string; cta?: boolean }>;
 };
 
+function externalLinkProps(href: string) {
+  return href.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {};
+}
+
 export function HeroNav({ brand, brandSuffix, items }: HeroNavProps) {
   const [scrolled, setScrolled] = useState(false);
 
@@ -89,6 +93,7 @@ function NavItem({
     return (
       <Link
         href={item.href}
+        {...externalLinkProps(item.href)}
         className="inline-flex items-center rounded-full bg-[#FBFC40] px-4 py-2 text-[14px] font-medium text-blue-900 transition-[background-color,box-shadow,transform] duration-150 ease-out hover:bg-[#F4F538] active:scale-[0.97]"
         style={{ boxShadow: '0 12px 28px -18px rgba(251,252,64,0.7)' }}
       >
@@ -100,6 +105,7 @@ function NavItem({
   return (
     <Link
       href={item.href}
+      {...externalLinkProps(item.href)}
       className={`group relative text-[14px] transition-[color,transform] duration-150 ease-out active:scale-[0.985] ${
         scrolled ? 'text-blue-900 hover:text-blue-700' : 'text-white hover:text-white/85'
       }`}

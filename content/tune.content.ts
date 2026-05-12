@@ -40,8 +40,7 @@ const tuneContent: ProductPageContent = {
     sub: 'Lemnisca\'s Tune accelerates early-stage fermentation programs by turning data into decisions. Stop wasting runs on blind optimization. Let Tune guide your next experiment using what your data has already taught it, so you hit productivity targets faster.',
     primaryCta: {
       label: 'Request a Tune fit conversation',
-      // TODO: swap to live Calendly URL when ready (see CALENDLY_URL in shared.content.ts).
-      href: 'https://calendly.com/lemnisca',
+      href: 'https://calendly.com/pushkar-lemnisca/30min',
       variant: 'primary',
     },
   },

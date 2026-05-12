@@ -1,8 +1,7 @@
 // Brand-level shared content — nav and footer copy.
 // This app is Tune-only; cross-product (Thrust) lives in a separate app.
 
-// TODO: replace with the live Calendly booking link once it's set up.
-export const CALENDLY_URL = 'https://calendly.com/lemnisca';
+export const CALENDLY_URL = 'https://calendly.com/pushkar-lemnisca/30min';
 const currentYear = new Date().getFullYear();
 
 export const shared = {

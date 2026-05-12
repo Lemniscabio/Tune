@@ -65,6 +65,10 @@
     font-feature-settings: "ss01", "cv11", "cv02";
     background: var(--color-surface-parchment);
     color: var(--color-ink-black);
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+    overscroll-behavior-x: none;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
@@ -73,7 +77,11 @@
   body {
     background: var(--color-surface-parchment);
     color: var(--color-ink-black);
+    width: 100%;
+    max-width: 100%;
     min-height: 100vh;
+    overflow-x: hidden;
+    overscroll-behavior-x: none;
   }
 
   ::selection {
@@ -205,9 +213,9 @@
 }
 
 @keyframes blue-sheen-drift {
-  0% { transform: translateX(-8%) translateY(0%); opacity: 0.18; }
-  50% { transform: translateX(8%) translateY(3%); opacity: 0.28; }
-  100% { transform: translateX(-8%) translateY(0%); opacity: 0.18; }
+  0% { transform: translateY(0%); opacity: 0.18; }
+  50% { transform: translateY(3%); opacity: 0.28; }
+  100% { transform: translateY(0%); opacity: 0.18; }
 }
 
 .engagement-transition-pill {

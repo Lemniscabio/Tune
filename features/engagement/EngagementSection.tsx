@@ -34,6 +34,8 @@ export function EngagementSection({ section, id = 'engagement-journey' }: Engage
           </div>
           <motion.a
             href={CALENDLY_URL}
+            target="_blank"
+            rel="noopener noreferrer"
             initial="rest"
             whileHover="hover"
             whileTap="tap"
