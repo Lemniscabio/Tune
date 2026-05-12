@@ -13,9 +13,9 @@ import {
 // ─── Data ────────────────────────────────────────────────────────────────────
 
 const STEPS = [
-  { id: '01', line1: 'Audit the',   line2: 'process' },
+  { id: '01', line1: 'Audit the',   line2: 'data' },
   { id: '02', line1: 'Model the',   line2: 'process' },
-  { id: '03', line1: 'Tune the',    line2: 'process' },
+  { id: '03', line1: 'Optimize' },
   { id: '04', line1: 'Pilot-ready', line2: 'process' },
 ] as const;
 
@@ -23,6 +23,7 @@ const STEPS = [
 
 const STEP_COUNT = 4;
 const HOLD_MS    = 1300;
+const MANUAL_AUTO_PAUSE_MS = 5000;
 const TRAVEL_MS  = 920;
 const SNAP_MS    = 420;
 const EASE       = [0.4, 0, 0.2, 1] as [number, number, number, number];
@@ -42,14 +43,19 @@ const IND_R      = KNOB_R - 14;
 const KNOB_HEAD_DEG = -90;
 const DRAG_TAP_THRESHOLD_DEG = 4;
 const KNOB_EXPANDED_SCALE = 1.065;
-const INERTIA_MIN_VELOCITY = 55;
-const INERTIA_STOP_VELOCITY = 18;
-const INERTIA_FRICTION = 520;
-const INERTIA_MAX_VELOCITY = 980;
-const INERTIA_MAX_MS = 1800;
+const INERTIA_STOP_VELOCITY = 10;
+const INERTIA_DAMPING = 1.25;
+const INERTIA_SOFT_LIMIT_VELOCITY = 1600;
+const INERTIA_OVERFLOW_RESPONSE = 700;
+const INERTIA_MIN_RELEASE_VELOCITY = 360;
+const INERTIA_MAX_MS = 3200;
 
 // Section to scroll to when step labels/nodes are clicked
 const HOW_IT_WORKS_ID = 'engagement-journey';
+
+function stepLabel(step: (typeof STEPS)[number]) {
+  return 'line2' in step ? `${step.line1} ${step.line2}` : step.line1;
+}
 
 function polar(r: number, deg: number) {
   const rad = (deg * Math.PI) / 180;
@@ -83,6 +89,17 @@ function snappedRotation(rotation: number) {
   return Math.round(rotation / 90) * 90;
 }
 
+function softenedInertiaVelocity(velocity: number) {
+  const direction = Math.sign(velocity);
+  const speed = Math.abs(velocity);
+
+  if (speed <= INERTIA_SOFT_LIMIT_VELOCITY) return velocity;
+
+  const overflow = speed - INERTIA_SOFT_LIMIT_VELOCITY;
+  const softenedOverflow = Math.log1p(overflow / INERTIA_OVERFLOW_RESPONSE) * INERTIA_OVERFLOW_RESPONSE;
+  return direction * (INERTIA_SOFT_LIMIT_VELOCITY + softenedOverflow);
+}
+
 function rotationForStep(step: number, currentRotation: number) {
   const currentMod = positiveModulo(currentRotation, 360);
   const targetMod = step * 90;
@@ -113,6 +130,7 @@ type KnobDrag = {
   previousDeg: number;
   rotation: number;
   totalTravelDeg: number;
+  netTravelDeg: number;
   lastTime: number;
   velocityDegPerSecond: number;
 };
@@ -146,12 +164,14 @@ export function ConcentricLoop() {
   const [hoveringKnob, setHoveringKnob] = useState(false);
   const [focusedKnob, setFocusedKnob] = useState(false);
   const [settling, setSettling] = useState(false);
+  const [autoResumeTick, setAutoResumeTick] = useState(0);
   const svgRef = useRef<SVGSVGElement>(null);
   const knobHitRef = useRef<SVGCircleElement>(null);
   const dragRef = useRef<KnobDrag | null>(null);
   const animationRef = useRef<ReturnType<typeof animate> | null>(null);
   const settleTimerRef = useRef<number | null>(null);
   const inertiaFrameRef = useRef<number | null>(null);
+  const manualPauseUntilRef = useRef(0);
   const motRot = useMotionValue(0);
   const activeArcPath = useTransform(motRot, activeArcD);
   const knobExpanded = dragging || hoveringKnob || focusedKnob;
@@ -175,6 +195,11 @@ export function ConcentricLoop() {
     stopInertia();
     setSettling(false);
   }, [clearSettleTimer, stopInertia]);
+
+  const pauseAutoLoop = useCallback(() => {
+    manualPauseUntilRef.current = performance.now() + MANUAL_AUTO_PAUSE_MS;
+    setAutoResumeTick((tick) => tick + 1);
+  }, []);
 
   const animateToRotation = useCallback((targetRotation: number, durationMs = SNAP_MS, ease = SNAP_EASE) => {
     animationRef.current?.stop();
@@ -224,8 +249,9 @@ export function ConcentricLoop() {
 
   const startInertia = useCallback((initialVelocity: number) => {
     stopInertia();
+    pauseAutoLoop();
 
-    let velocity = Math.max(-INERTIA_MAX_VELOCITY, Math.min(INERTIA_MAX_VELOCITY, initialVelocity));
+    let velocity = softenedInertiaVelocity(initialVelocity);
     let rotation = motRot.get();
     let previousTime = performance.now();
     const startTime = previousTime;
@@ -234,18 +260,18 @@ export function ConcentricLoop() {
 
     const tick = (now: number) => {
       const elapsedSeconds = Math.min((now - previousTime) / 1000, 0.05);
-      const direction = Math.sign(velocity);
-      const nextSpeed = Math.max(0, Math.abs(velocity) - INERTIA_FRICTION * elapsedSeconds);
+      const nextVelocity = velocity * Math.exp(-INERTIA_DAMPING * elapsedSeconds);
 
-      rotation += direction * ((Math.abs(velocity) + nextSpeed) / 2) * elapsedSeconds;
-      velocity = direction * nextSpeed;
+      rotation += ((velocity + nextVelocity) / 2) * elapsedSeconds;
+      velocity = nextVelocity;
       previousTime = now;
       motRot.set(rotation);
 
       const expired = now - startTime > INERTIA_MAX_MS;
-      if (nextSpeed <= INERTIA_STOP_VELOCITY || expired) {
+      if (Math.abs(nextVelocity) <= INERTIA_STOP_VELOCITY || expired) {
         inertiaFrameRef.current = null;
-        animateToRotation(snappedRotation(rotation), SNAP_MS, SNAP_EASE);
+        pauseAutoLoop();
+        setSettling(false);
         return;
       }
 
@@ -253,25 +279,27 @@ export function ConcentricLoop() {
     };
 
     inertiaFrameRef.current = requestAnimationFrame(tick);
-  }, [animateToRotation, motRot, stopInertia]);
+  }, [motRot, pauseAutoLoop, stopInertia]);
 
   const startKnobDrag = useCallback((pointerId: number, point: { clientX: number; clientY: number }) => {
     const pointerDeg = pointerDegFromEvent(point);
     if (pointerDeg === null) return false;
     const now = performance.now();
 
+    pauseAutoLoop();
     stopRotationAnimation();
     dragRef.current = {
       pointerId,
       previousDeg: pointerDeg,
       rotation: motRot.get(),
       totalTravelDeg: 0,
+      netTravelDeg: 0,
       lastTime: now,
       velocityDegPerSecond: 0,
     };
     setDragging(true);
     return true;
-  }, [motRot, pointerDegFromEvent, stopRotationAnimation]);
+  }, [motRot, pauseAutoLoop, pointerDegFromEvent, stopRotationAnimation]);
 
   const updateKnobDrag = useCallback((pointerId: number, point: { clientX: number; clientY: number }) => {
     const drag = dragRef.current;
@@ -288,6 +316,7 @@ export function ConcentricLoop() {
     drag.previousDeg = pointerDeg;
     drag.rotation += delta;
     drag.totalTravelDeg += Math.abs(delta);
+    drag.netTravelDeg += delta;
     drag.lastTime = now;
     drag.velocityDegPerSecond = drag.velocityDegPerSecond * 0.28 + instantVelocity * 0.72;
     motRot.set(drag.rotation);
@@ -299,10 +328,11 @@ export function ConcentricLoop() {
 
     dragRef.current = null;
     setDragging(false);
+    pauseAutoLoop();
 
     const rotation = motRot.get();
     if (cancelled) {
-      animateToRotation(snappedRotation(rotation), SNAP_MS, SNAP_EASE);
+      setSettling(false);
       return;
     }
 
@@ -311,15 +341,17 @@ export function ConcentricLoop() {
       return;
     }
 
-    if (Math.abs(drag.velocityDegPerSecond) >= INERTIA_MIN_VELOCITY) {
-      startInertia(drag.velocityDegPerSecond);
-      return;
-    }
+    const releaseDirection = Math.sign(drag.velocityDegPerSecond || drag.netTravelDeg);
+    const releaseVelocity = releaseDirection * Math.max(
+      Math.abs(drag.velocityDegPerSecond),
+      INERTIA_MIN_RELEASE_VELOCITY,
+    );
 
-    animateToRotation(snappedRotation(rotation), SNAP_MS, SNAP_EASE);
-  }, [animateToRotation, motRot, startInertia]);
+    startInertia(releaseVelocity);
+  }, [animateToRotation, motRot, pauseAutoLoop, startInertia]);
 
   const handleKnobPointerDown = useCallback((event: ReactPointerEvent<SVGCircleElement>) => {
+    if (event.pointerType === 'touch') return;
     if (!event.isPrimary) return;
 
     event.preventDefault();
@@ -329,6 +361,7 @@ export function ConcentricLoop() {
   }, [startKnobDrag]);
 
   const handleKnobPointerMove = useCallback((event: ReactPointerEvent<SVGCircleElement>) => {
+    if (event.pointerType === 'touch') return;
     updateKnobDrag(event.pointerId, event);
   }, [updateKnobDrag]);
 
@@ -336,6 +369,8 @@ export function ConcentricLoop() {
     event: ReactPointerEvent<SVGCircleElement>,
     cancelled = false,
   ) => {
+    if (event.pointerType === 'touch') return;
+
     if (event.currentTarget.hasPointerCapture(event.pointerId)) {
       event.currentTarget.releasePointerCapture(event.pointerId);
     }
@@ -380,18 +415,27 @@ export function ConcentricLoop() {
   useEffect(() => {
     if (reduced || dragging || settling) return;
 
+    const remainingPauseMs = manualPauseUntilRef.current - performance.now();
+    if (remainingPauseMs > 0) {
+      const resumeTimer = window.setTimeout(() => {
+        setAutoResumeTick((tick) => tick + 1);
+      }, remainingPauseMs);
+
+      return () => window.clearTimeout(resumeTimer);
+    }
+
     const timer = window.setTimeout(() => {
       animateToRotation(snappedRotation(motRot.get()) + 90, TRAVEL_MS, EASE);
     }, HOLD_MS);
 
     return () => window.clearTimeout(timer);
-  }, [active, animateToRotation, dragging, motRot, reduced, settling]);
+  }, [active, animateToRotation, autoResumeTick, dragging, motRot, reduced, settling]);
 
   useEffect(() => {
     const knobHit = knobHitRef.current;
     if (!knobHit) return;
 
-    const listenerOptions = { passive: false };
+    const listenerOptions: AddEventListenerOptions = { passive: false };
 
     const handleTouchStart = (event: TouchEvent) => {
       const touch = event.changedTouches.item(0);
@@ -435,15 +479,15 @@ export function ConcentricLoop() {
     };
 
     knobHit.addEventListener('touchstart', handleTouchStart, listenerOptions);
-    knobHit.addEventListener('touchmove', handleTouchMove, listenerOptions);
-    knobHit.addEventListener('touchend', handleTouchEnd, listenerOptions);
-    knobHit.addEventListener('touchcancel', handleTouchCancel, listenerOptions);
+    window.addEventListener('touchmove', handleTouchMove, listenerOptions);
+    window.addEventListener('touchend', handleTouchEnd, listenerOptions);
+    window.addEventListener('touchcancel', handleTouchCancel, listenerOptions);
 
     return () => {
       knobHit.removeEventListener('touchstart', handleTouchStart);
-      knobHit.removeEventListener('touchmove', handleTouchMove);
-      knobHit.removeEventListener('touchend', handleTouchEnd);
-      knobHit.removeEventListener('touchcancel', handleTouchCancel);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchend', handleTouchEnd);
+      window.removeEventListener('touchcancel', handleTouchCancel);
     };
   }, [finishKnobDrag, startKnobDrag, updateKnobDrag]);
 
@@ -458,7 +502,7 @@ export function ConcentricLoop() {
   return (
     <figure
       className="relative mx-auto aspect-square w-full max-w-[380px] sm:max-w-[460px] md:max-w-[520px]"
-      aria-label="Tune four-step process: Audit, Model, Tune, Pilot-ready"
+      aria-label="Tune four-step process: Audit the data, Model the process, Optimize, Pilot-ready process"
     >
       <svg
         ref={svgRef}
@@ -615,7 +659,7 @@ export function ConcentricLoop() {
                 style={{ userSelect: 'none' }}
               >
                 <tspan x={lp.x} y={baseY}>{step.line1}</tspan>
-                <tspan x={lp.x} dy={16}>{step.line2}</tspan>
+                {'line2' in step && <tspan x={lp.x} dy={16}>{step.line2}</tspan>}
               </motion.text>
             </g>
           );
@@ -729,7 +773,7 @@ export function ConcentricLoop() {
           aria-valuemin={1}
           aria-valuemax={STEP_COUNT}
           aria-valuenow={active + 1}
-          aria-valuetext={`${STEPS[active].id}: ${STEPS[active].line1} ${STEPS[active].line2}`}
+          aria-valuetext={`${STEPS[active].id}: ${stepLabel(STEPS[active])}`}
           style={{
             cursor: dragging ? 'grabbing' : 'grab',
             pointerEvents: 'all',
