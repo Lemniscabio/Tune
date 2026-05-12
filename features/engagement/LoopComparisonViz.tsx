@@ -13,7 +13,6 @@ type PanelConfig = {
   statNote: string;
   loopBackToIndex: number;
   loopLabel?: string;
-  implementationRule: string;
 };
 
 type FlowProps = PanelConfig;
@@ -320,9 +319,8 @@ function VerticalFlow({
 }
 
 function LoopPanel(props: PanelConfig) {
-  const { variant, label, stat, statNote, implementationRule } = props;
+  const { variant, label, stat, statNote } = props;
   const blue = variant === 'blue';
-  const ruleColor = blue ? '#3D5BAA' : '#6B7A99';
 
   return (
     <div
@@ -363,12 +361,6 @@ function LoopPanel(props: PanelConfig) {
         >
           {statNote}
         </p>
-        <p
-          className="mt-3 text-[12px] font-semibold leading-[1.5] tracking-[-0.005em]"
-          style={{ color: ruleColor }}
-        >
-          {implementationRule}
-        </p>
       </div>
     </div>
   );
@@ -385,7 +377,6 @@ export function LoopComparisonViz() {
         stat="~10s"
         statNote="Physical experiments per loop — guided by intuition, high uncertainty"
         loopBackToIndex={0}
-        implementationRule="Implementation rule: KPI = No loops back to Run experiments."
       />
       <LoopPanel
         variant="blue"
@@ -401,7 +392,6 @@ export function LoopComparisonViz() {
         statNote="Virtual experiments per loop — only targeted physical runs needed"
         loopBackToIndex={1}
         loopLabel="iterate model"
-        implementationRule="Implementation rule: KPI = No loops back to Build predictive model, not Run."
       />
     </div>
   );
