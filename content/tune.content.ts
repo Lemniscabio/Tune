@@ -44,11 +44,6 @@ const tuneContent: ProductPageContent = {
       href: 'https://calendly.com/lemnisca',
       variant: 'primary',
     },
-    secondaryCta: {
-      label: 'Read the methodology',
-      href: '#how',
-      variant: 'ghost',
-    },
   },
 
   // §02 — Problem space. Diagnostic tension; 4 linked problems verbatim from Slide 4.

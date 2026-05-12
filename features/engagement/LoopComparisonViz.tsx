@@ -54,6 +54,12 @@ function labelFillColor(blue: boolean) {
   return blue ? '#4A6FBF' : '#8B95A6';
 }
 
+function horizontalNodeClass(index: number, blue: boolean) {
+  if (!blue) return index === 0 ? 'w-[92px]' : 'w-[82px]';
+
+  return ['w-[42px]', 'w-[92px]', 'w-[92px]', 'w-[112px]'][index] ?? 'w-[88px]';
+}
+
 // ---------- Horizontal (lg+) ----------
 function HorizontalFlow({
   variant,
@@ -95,7 +101,7 @@ function HorizontalFlow({
   }, [loopBackToIndex]);
 
   return (
-    <div className="overflow-x-hidden">
+    <div className="overflow-visible pr-6">
       <div className="inline-block min-w-full">
         <div ref={flowRef} className="flex items-center gap-1">
           {steps.map((step, i) => (
@@ -104,7 +110,7 @@ function HorizontalFlow({
                 ref={(el) => {
                   nodeRefs.current[i] = el;
                 }}
-                className={`whitespace-nowrap rounded-[6px] border px-1.5 py-1 text-[9.5px] font-medium leading-snug ${nodeCls(blue)}`}
+                className={`flex min-h-[34px] items-center justify-center rounded-[6px] border px-1.5 py-1 text-center text-[13px] font-medium leading-tight ${horizontalNodeClass(i, blue)} ${nodeCls(blue)}`}
               >
                 {step.label}
               </div>
@@ -114,7 +120,7 @@ function HorizontalFlow({
 
           <div
             ref={decisionRef}
-            className={`flex h-[46px] w-[46px] flex-shrink-0 items-center justify-center rounded-full border-2 text-center text-[8px] font-semibold leading-tight ${circleCls(blue)}`}
+            className={`flex h-[70px] w-[70px] flex-shrink-0 items-center justify-center rounded-full border-2 text-center text-[12px] font-semibold leading-tight ${circleCls(blue)}`}
           >
             KPIs
             <br />
@@ -125,7 +131,7 @@ function HorizontalFlow({
           <span className={`flex-shrink-0 text-[9.5px] font-semibold ${yesCls(blue)}`}>Yes</span>
           <span className={`select-none flex-shrink-0 text-[11px] leading-none ${arrowCls(blue)}`}>→</span>
           <div
-            className={`flex-shrink-0 whitespace-nowrap rounded-[6px] border px-1.5 py-1 text-[9.5px] font-semibold ${exitCls(blue)}`}
+            className={`flex-shrink-0 whitespace-nowrap rounded-[6px] border px-1.5 py-1 text-[12px] font-semibold ${exitCls(blue)}`}
           >
             {exitLabel}
           </div>
@@ -324,10 +330,10 @@ function LoopPanel(props: PanelConfig) {
 
   return (
     <div
-      className={`flex min-w-0 flex-col rounded-[24px] border p-6 md:p-7 ${
+      className={`flex min-w-0 flex-col rounded-[24px] border ${
         blue
-          ? 'border-blue-200 bg-[linear-gradient(160deg,#F4F6FF_0%,#EEF1FF_100%)]'
-          : 'border-[#E4E8EF] bg-[#F9FAFB]'
+          ? 'border-blue-200 bg-[linear-gradient(160deg,#F4F6FF_0%,#EEF1FF_100%)] p-6 md:p-7'
+          : 'border-[#E4E8EF] bg-[#F9FAFB] p-8 md:p-10'
       }`}
     >
       <div
@@ -368,7 +374,7 @@ function LoopPanel(props: PanelConfig) {
 
 export function LoopComparisonViz() {
   return (
-    <div className="grid gap-5 min-[1230px]:grid-cols-[0.79fr_1.35fr] min-[1230px]:gap-12">
+    <div className="grid gap-5 min-[1230px]:grid-cols-[0.95fr_1.35fr] min-[1230px]:gap-8">
       <LoopPanel
         variant="muted"
         label="Without Tune"
