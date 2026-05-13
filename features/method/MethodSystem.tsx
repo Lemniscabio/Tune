@@ -16,7 +16,7 @@ const BENTO_LAYOUT = [
 export function MethodSystem({ section, id = 'how-method' }: MethodSystemProps) {
   return (
     <section id={id} className="relative bg-white">
-      <div className="mx-auto max-w-[1240px] px-6 pt-24 pb-32 md:px-10 md:pt-32 md:pb-40 lg:px-14">
+      <div className="mx-auto max-w-[1340px] px-6 pt-24 pb-32 md:px-10 md:pt-32 md:pb-40 lg:px-14">
         <div className="max-w-[1040px]">
           <TransitionPill>THE SOLUTION</TransitionPill>
           <h2 className="display-section mt-5 max-w-[14ch] text-ink-black md:max-w-none">

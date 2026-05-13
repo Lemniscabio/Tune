@@ -98,17 +98,17 @@ const tuneContent: ProductPageContent = {
       {
         index: '02',
         title: 'Model',
-        body: 'Tune builds the model specific to the biology, process conditions, measurements, and operating logic that explains current performance.',
+        body: 'Tune builds a predictive model of your fermentation, calibrated to your strain biology, process design, and reactor physics. The model explains current performance and predicts how it responds to change.',
       },
       {
         index: '03',
         title: 'Optimize',
-        body: 'Each cycle recommends the highest-value process changes, refines the model with new data, and improves productivity and reproducibility.',
+        body: 'Each cycle, Tune simulates thousands of experiments to find the conditions that increase productivity. Your team validates the top candidates in the wet lab, and the model gets sharper with every round.',
       },
       {
         index: '04',
         title: 'Deliver',
-        body: 'Tune delivers the operating window, expected performance, remaining risks, and evidence needed to commit to pilot.',
+        body: 'Tune hands over the optimized process conditions, expected performance, remaining risks, and the pilot run protocol.',
       },
     ],
     transitionLine: 'Each pass through the loop makes the next run more targeted and more legible.',

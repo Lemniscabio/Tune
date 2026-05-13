@@ -57,7 +57,7 @@ function labelFillColor(blue: boolean) {
 function horizontalNodeClass(index: number, blue: boolean) {
   if (!blue) return index === 0 ? 'w-[92px]' : 'w-[82px]';
 
-  return ['w-[42px]', 'w-[92px]', 'w-[92px]', 'w-[112px]'][index] ?? 'w-[88px]';
+  return ['w-[88px]', 'w-[92px]', 'w-[92px]', 'w-[112px]'][index] ?? 'w-[88px]';
 }
 
 // ---------- Horizontal (lg+) ----------
@@ -332,7 +332,7 @@ function LoopPanel(props: PanelConfig) {
       className={`flex min-w-0 flex-col rounded-[24px] border ${
         blue
           ? 'border-blue-200 bg-[linear-gradient(160deg,#F4F6FF_0%,#EEF1FF_100%)] p-6 md:p-7'
-          : 'border-[#E4E8EF] bg-[#F9FAFB] p-8 md:p-10'
+          : 'border-[#E4E8EF] bg-[#F9FAFB] px-8 pt-6 pb-8 md:px-10 md:pt-7 md:pb-10'
       }`}
     >
       <div
@@ -351,7 +351,7 @@ function LoopPanel(props: PanelConfig) {
         <VerticalFlow {...props} />
       </div>
 
-      <div className="mt-10 flex flex-1 flex-col justify-end">
+      <div className="mt-24">
         <p
           className={`text-[3rem] font-bold leading-none tracking-[-0.05em] md:text-[3.6rem] ${
             blue ? 'text-blue-600' : 'text-[#C8D0DC]'
@@ -373,7 +373,7 @@ function LoopPanel(props: PanelConfig) {
 
 export function LoopComparisonViz() {
   return (
-    <div className="grid gap-5 min-[1230px]:grid-cols-[0.95fr_1.35fr] min-[1230px]:gap-8">
+    <div className="grid gap-5 min-[1230px]:grid-cols-[0.991fr_1.38fr] min-[1230px]:gap-6">
       <LoopPanel
         variant="muted"
         label="Without Tune"
@@ -387,7 +387,7 @@ export function LoopComparisonViz() {
         variant="blue"
         label="With Tune"
         steps={[
-          { label: 'Run' },
+          { label: 'Run experiments' },
           { label: 'Build predictive model' },
           { label: 'Run virtual experiments' },
           { label: 'Validate recommended runs' },
